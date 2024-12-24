@@ -1,0 +1,28 @@
+{
+    "name": "request-interop/interface",
+    "description": "Interoperable server request interfaces for PHP.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Paul M. Jones",
+            "email": "pmjones@pmjones.io"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "RequestInterop\\Interface\\": "./src"
+        }
+    },
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "pds/skeleton": "^1.0",
+        "phpstan/phpstan": "^2.0"
+    },
+    "scripts": {
+        "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
+        "check": "composer analyze"
+    }
+}

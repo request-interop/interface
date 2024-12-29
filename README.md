@@ -2,7 +2,7 @@
 
 This package provides interoperable interfaces for encapsulating readable server-side request values, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects and refines the common practices of over a dozen different userland projects.
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][].
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
@@ -106,9 +106,29 @@ The _Url_ interface represents the URL of the request. It defines these properti
 
 - `__toString() : string` returns the full URL as a string.
 
+It also provides this custom PHPStan type to enable better static analysis:
+
+- `UrlArray`:
+
+    ```
+    array{
+        scheme:?string,
+        user:?string,
+        pass:?string,
+        host:?string,
+        port:?int,
+        path:?string,
+        query:?string,
+        fragment:?string
+    }
+    ```
+
 Notes:
 
 - **This is a _Url_ interface, not a _Uri_ interface.** This is because the protocol (i.e., the `$scheme`) is intended to be included in the properties. Cf. [The Real Difference Between a URL and a URI][]: "A URL is a more specific version of a URI, so if the protocol is given or implied you should probably use URL."
+
+- **The _Url_ properties, and the `UrlArray` elements, are taken from the [`parse_url()`](https://www.php.net/parse_url) array structure.**
+
 
 ### _Upload_
 
@@ -255,6 +275,8 @@ This package is an intellectual descendant of that RFC, similar in form but much
 * * *
 
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
+[RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
+[RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
 [README-UPLOADS.md]: ./README-UPLOADS.md
 [The Real Difference Between a URL and a URI]: https://danielmiessler.com/p/difference-between-uri-url/
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml

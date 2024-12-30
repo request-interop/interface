@@ -28,7 +28,7 @@ At this point, we see that PSR-7 has been expanded to answer a second question: 
 
 (For full disclosure, note that [I became a sponsor on PSR-7 in December 2014](https://groups.google.com/d/topic/php-fig/Y3a4hcRN610/discussion), along with Beau Simensen as the coordinator.)
 
-It is during MWOP’s tenure, [before the successful acceptance vote](https://groups.google.com/d/topic/php-fig/0baLqR6Rvcg/discussion) in May 2015, that we see the PSR-7 interfaces expand in number, and become "immutable" (with one intentional exception, and other unintentional exceptions).
+It is during MWOP’s tenure, [before the successful acceptance vote](https://groups.google.com/d/topic/php-fig/0baLqR6Rvcg/discussion) in May 2015, that we see the PSR-7 interfaces expand in number, and become "immutable" (though inconsistently so).
 
 So we can see that the purpose of PSR-7 is to model [2 sets of HTTP messages using 7 interfaces](http://www.php-fig.org/psr/psr-7/): one set for when PHP sends a request and receives a response, and an addition set for when PHP receives a request and sends a response.
 

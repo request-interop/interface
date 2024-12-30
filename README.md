@@ -1,14 +1,24 @@
 # RequestInterop Interface Package
 
-This package provides interoperable interfaces for encapsulating readable server-side request values, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects and refines the common practices of over a dozen different userland projects.
+This package provides interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects and refines the common practices of over a dozen different userland projects.
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
-**The interfaces define readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more usually idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
+This package defines the following interfaces:
 
-**The interfaces define property hooks for `get` but not `set`.** The interfaces only guarantee readability; writability is outside the scope of this package.
+- _Request_ to represent the incoming request.
+- _Upload_ to represent an uploaded file.
+- _Url_ to represent the request URL.
+- _Body_ to represent mutable request or upload body content.
+- _Factory_ to create instances of the above.
+
+Notes:
+
+- **The interfaces define readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more usually idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
+
+- **The interfaces define property hooks for `get` but not `set`.** The interfaces only guarantee readability; writability is outside the scope of this package.
 
 ### _Request_
 
@@ -239,7 +249,7 @@ The _Factory_ interface defines the following methods.
     ) : Url;
     ```
 
-- `newBody()` returns a new _Body_ instance:
+- `newBody()` returns a new independent _Body_ instance:
 
     ```php
     /**
@@ -268,7 +278,7 @@ Implementations MAY contain additional properties and methods not defined in the
 
 Notes:
 
-- **Reflection does not invalidate advertisements of readonly or immutable implementations.** The ability of a consumer to use Reflection to mutate an implementation advertised as readonly or immutable does not constitute a failure to comply with RequstInterop.
+- **Reflection does not invalidate advertisements of readonly or immutable implementations.** The ability of a consumer to use Reflection to mutate an implementation advertised as readonly or immutable does not constitute a failure to comply with RequestInterop.
 
 - **Reference implementations** may be found at <https://github.com/request-interop/impl>.
 

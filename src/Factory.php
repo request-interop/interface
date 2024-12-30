@@ -68,4 +68,9 @@ interface Factory
         ?string $query = null,
         ?string $fragment = null,
     ) : Url;
+
+    /**
+     * @param BodyResource $body
+     */
+    public function newBody(mixed $body) : Body;
 }

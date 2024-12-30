@@ -1,6 +1,6 @@
 # PSR-7 vs RequestInterop
 
-(Copied, with some light editing, from <https://paul-m-jones.com/post/2017/01/05/psr-7-vs-the-serverrequestresponse-rfc/>.)
+(Some portions copied, with light editing, from <https://paul-m-jones.com/post/2017/01/05/psr-7-vs-the-serverrequestresponse-rfc/>.)
 
 ## PSR-7
 
@@ -34,10 +34,30 @@ So we can see that the purpose of PSR-7 is to model [2 sets of HTTP messages usi
 
 ## RequestInterop
 
-RequestInterop starts out by asking a different question. It is not concerned with modeling HTTP messages, whether when sending or receiving them.
+RequestInterop starts out by asking a different question. It is not concerned with modeling HTTP messages, whether sending or receiving them.
 
-Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Becuase RequestInterop begins with a different question, it leads to a different answer: a _Request_ interface that exposes almost only properties, mimicking PHP’s superglobals.
+Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Becuase RequestInterop begins with a different question, it leads to a different answer: a _Request_ interface that exposes only properties, mimicking PHP’s superglobals.
 
-## Conclusion
+## Other Differences
 
-All of this is to say that PSR-7 attempts to model HTTP messages, whereas RequestInterop merely encapsulates copies of the PHP superglobals.
+There are some additional differences not included above, all specific to the PSR-7 _ServerRequestInterface_.
+
+### Immutability
+
+RequestInterop requires that implementations advertised as readonly or immutable be **deeply** readonly or immutable. _ServerRequestInterface_ makes no such demand; instead, it explicitly allows mutability in various ways, most notably the _StreamInterface_ but also the attributes and parsed body.
+
+### Attributes and Application State
+
+_ServerRequestInterface_ does not only model the incoming HTTP request message. It also models some portion of the application context via the "attributes" elements. As a result, the "attributes" become a dumping-ground for anything and everything that might need to be carried along in the middleware chain for application-specific context. Further, they are intended to be mutable, breaking the promised immutability of implementations.
+
+(Cf. [ServerRequestInterface::getAttributes()](https://github.com/php-fig/http-message/blob/master/src/ServerRequestInterface.php#L202-L206)).
+
+RequestInterop does not provide a space for application-specific context. It limits itself to the PHP superglobals and values calculated from them alone.
+
+### Parsed Body vs `$input`
+
+Whereas _ServerRequestInterface_ comes down on one side regarding the ["parsed body"](https://www.php-fig.org/psr/psr-7/meta/#why-parsed-body-in-the-serverrequestinterface) type and structure, RequestInterop comes down on the opposite side.
+
+The _ServerRequestInterface_ solution allows an array **or object** to be the "parsed body". Further, any object at all may be part of that "parsed body". This has the benefit of flexibility, in that anything at all may be parsed out the request body. The drawbacks are that it is ambiguous, difficult to typehint, and makes it easy to break expectations of the immutability otherwise promised by the interface.
+
+RequestInterop, on the other hand, restricts its corresponding `$input` property to an array whose values are nulls, scalars, or (recursively) arrays of nulls and scalars. This eliminates any possibility of mutable elements contained in an otherwise readonly or immutable object, at the cost of disallowing objects and resources in the `$input`. This also provides consistency and comparability with the PHP superglobals.

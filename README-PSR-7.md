@@ -12,7 +12,7 @@ What you’ll find in the draft is one pair of request/response interfaces, desc
 
 After 8 months, Dowling stepped down in August 2014, citing a lack of time and motivation. He also said: "I don’t think there’s one way to represent HTTP messages, clients, or servers in PHP." https://groups.google.com/forum/#!topic/php-fig/XwFcqSmqzGk
 
-Shortly thereafter, in September 2014, with encouragement from many (including myself), MAtthew Weier O'Phinney of Zend Framework [takes over PSR-7](https://groups.google.com/d/topic/php-fig/CTPRa2XP8po/discussion). We learn that he has "Sencha Connect" and middleware on the brain:
+Shortly thereafter, in September 2014, with encouragement from many (including myself), Matthew Weier O'Phinney of Zend Framework [took over PSR-7](https://groups.google.com/d/topic/php-fig/CTPRa2XP8po/discussion). We read that he has "Sencha Connect" and middleware on the brain:
 
 > The reason I wanted to port Connect is this: an application consists of middleware. Each middleware is a callback that accepts a request, response, and a callback called "next" (which is optional, actually):
 >

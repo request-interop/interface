@@ -68,17 +68,17 @@ It also provides these custom PHPStan types to aid static analysis:
 
 - `MethodString`: `uppercase-string`
 
+- `QueryArray`: `mixed[]` -- Implementations MUST honor this `mixed[]` type as the recursive pseudo-type `<array-key, string|QueryArray>`.
+
 - `ServerArray`: `array<string, string>`
 
 - `UploadsArray`: `mixed[]` -- Implementations MUST honor this `mixed[]` type as the recursive pseudo-type `array<array-key, Upload|UploadsArray>`.
-
-- `QueryArray`: `mixed[]` -- Implementations MUST honor this `mixed[]` type as the recursive pseudo-type `<array-key, string|QueryArray>`.
 
 Notes:
 
 - **The `$method` property is a string and not a _Method_ interface.** Usually the reason for a _Method_ interface is to define `is(string $method) : bool` to make sure the comparison values use matching cases. However, the custom `MethodString` type is `uppercase-string`, which means static analysis should catch mismatched casing.
 
-- **The `FilesArray`, `InputArray`, `UploadsArray`, and `QueryArray` types are `mixed[]` only because they are recursive.** Currently, static analysis tools such as PHPStan cannot process recursive types. Implementations MUST honor these `mixed[]` types as the more strict, but not analyzable, recursive pseudo-type provided with their respective type descriptions.
+- **The `FilesArray`, `InputArray`, `QueryArray`, and `UploadsArray` types are `mixed[]` only because they are recursive.** Currently, static analysis tools such as PHPStan cannot process recursive types. Implementations MUST honor these `mixed[]` types as the more strict, but not analyzable, recursive pseudo-type provided with their respective type descriptions.
 
 - **The `QueryArray` type allows only  `string`, while `InputArray` allows any `scalar`.** The `QueryArray` values correspond to `$_GET`, which is composed only of strings. However, `InputArray` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
@@ -106,7 +106,7 @@ The _Url_ interface represents the URL of the request. It defines these properti
 
 - `__toString() : string` returns the full URL as a string.
 
-It also provides this custom PHPStan type to enable better static analysis:
+It also provides this custom PHPStan type to aid static analysis:
 
 - `UrlArray`:
 
@@ -158,11 +158,11 @@ The _Body_ interface represents the raw content of a _Request_ or an _Upload_. I
 
 - `__toString() : string` MUST return the entire `$body` resource as a string.
 
-It also provides this custom PHPStan type to enable better static analysis:
+It also provides this custom PHPStan type to aid static analysis:
 
 - `BodyResource`: `resource` of type (stream)
 
-Implementations of _Body_ MUST NOT be advertised as readonly or immutable. As a consequence, any implementation of _Request_ or _Upload_ that also implements _Body_ MUST NOT be advertised as readonly or immutable.
+Implementations of _Body_ MUST NOT be advertised as readonly or immutable. Thus, any implementation of _Request_ or _Upload_ that also implements _Body_ MUST NOT be advertised as readonly or immutable.
 
 The _Body_ interface MAY be implemented independently from a _Request_ or _Upload_.
 
@@ -170,13 +170,13 @@ Notes:
 
 - **The _Body_ interface is separated from the other interfaces.** Whereas readonly or immutable _Request_ and _Upload_ objects can be implemented easily, readonly and immutability on a stream resource is (practically speaking) so difficult to achieve as to be impossible. Thus, implementors who want a truly readonly or immutable _Request_ or _Upload_ can do so, though without access to the _Body_ as a resource. Implementors who need access to a _Body_ can implement it as part of a mutable _Request_ or _Upload_. Alternatively, it can be an independent mutable _Body_ alongside (but separate from) a readonly or immutable _Request_ or _Upload_.
 
-- **The `$body` resource might be manipulated externally.** As with any stream resource, the state of the `$body` resource is mutable. Consumers might modify it, close it, leave the pointer in an unexpected location, and so on. This is why _Body_ implementations MUST NOT be advertised as readonly or immutable.
+- **The `$body` resource might be manipulated externally.** As with any stream resource, the state of the `$body` resource is mutable. Consumers might modify it, close it, leave the pointer in an unexpected location, and so on. This is why _Body_ implementations must not be advertised as readonly or immutable.
 
 ### _Factory_
 
 The _Factory_ interface defines the following methods.
 
-- Returns a new _Request_ instance:
+- `newRequest()` returns a new _Request_ instance:
 
     ```php
     /**
@@ -206,7 +206,7 @@ The _Factory_ interface defines the following methods.
     ) : Request;
     ```
 
-- Returns a new _Upload_ instance:
+- `newUpload()` returns a new _Upload_ instance:
 
     ```php
     /**
@@ -224,7 +224,7 @@ The _Factory_ interface defines the following methods.
     ) : Upload;
     ```
 
-- Returns a new _Url_ instance:
+- `newUrl()` returns a new _Url_ instance:
 
     ```php
     public function newUrl(
@@ -239,24 +239,38 @@ The _Factory_ interface defines the following methods.
     ) : Url;
     ```
 
+- `newBody()` returns a new _Body_ instance:
+
+    ```php
+    /**
+     * @param BodyResource $body
+     */
+    public function newBody(mixed $body) : Body;
+    ```
+
+    Implementations otherwise advertised as readonly or immutable SHOULD throw a _BadMethodCallException_ for this method, but MAY return an independent _Body_ implementation advertised as mutable.
+
 Notes:
 
 - **All `newRequest()` and `newUrl()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the default implementation object, such as one created from the superglobals.
 
-- **The first two `newUpload()` arguments are required.** An _Upload_ must have at least a `$tmpName` and an `$error` code; all other values are optional.
+- **The first two `newUpload()` arguments are required.** An _Upload_ MUST have at least a `$tmpName` and an `$error` code; all other values are optional.
 
+- **The `newBody()` method MUST NOT return an implementation advertised as readonly or immutable.** Whereas readonly or immutable implementations of _Request_ and _Upload_ are not allowed to implement _Body_, a separate _Body_ implementation is allowed, so long as it is advertised as mutable. Thus, factories for otherwise readonly or immutable implementations are allowed to return an independent mutable _Body_ implementation.
+
+- **The `newBody()` method `$body` parameter is not nullable.** An independent _Body_ implementation is not expected to have a default resource to draw from.
 
 ## Implementations
 
 Implementations advertised as readonly or immutable MUST be deeply readonly or immutable; they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
 
-Implementations MAY contain properties and methods not defined in these interfaces.
+Implementations MAY contain additional properties and methods not defined in these interfaces; implementations advertised as readonly or immutable MUST make those additional elements deeply readonly or immutable.
 
 Notes:
 
 - **Reflection does not invalidate advertisements of readonly or immutable implementations.** The ability of a consumer to use Reflection to mutate an implementation advertised as readonly or immutable does not constitute a failure to comply with RequstInterop.
 
-- **Reference implementations** are to be found at <https://github.com/request-interop/impl>.
+- **Reference implementations** may be found at <https://github.com/request-interop/impl>.
 
 ## Q & A
 
@@ -264,9 +278,15 @@ Notes:
 
 The pre-PSR-7 versions of Aura, Cake, Code Igniter, Horde, Joomla, Klein, Lithium, MediaWiki, Nette, Phalcon, Symfony, Yaf, Yii, and Zend. See this [project comparison][] for more information.
 
-### How is RequestInterop different from PSR-7?
+### How is RequestInterop different from PSR-7 _ServerRequestInterface_?
 
-The short answer is that PSR-7 attempts to model HTTP messages, whereas RequestInterop attempts to model the PHP superglobals. A longer answer is at [README-PSR-7.md][].
+In short:
+
+- _ServerRequestInterface_ attempts to model the incoming HTTP request message, plus application-specific context, with shallow and inconsistent immutability requirements.
+
+- RequestInterop attempts to model the PHP superglobals, provides no space for application context, and requires that readonly or immutable implementations to be deeply so.
+
+A longer answer is at [README-PSR-7.md][].
 
 ### How is RequestInterop different from the [Server-Side Request and Response Objects RFC](https://wiki.php.net/rfc/request_response)?
 

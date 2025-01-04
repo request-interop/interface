@@ -98,7 +98,7 @@ Notes:
 
 The _Url_ interface represents the URL of the request. It defines these properties and methods:
 
-- `?string $scheme { get; }` corresponds to the `host` key from `parse_url()`.
+- `?string $scheme { get; }` corresponds to the `scheme` key from `parse_url()`.
 
 - `?string $host { get; }` corresponds to the `host` key from `parse_url()`.
 

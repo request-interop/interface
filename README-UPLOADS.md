@@ -99,4 +99,4 @@ $uploads = [
 ]);
 ```
 
-Cf. the reference implementation of `uploadsArray()` at [https://github.com/request-interop/impl/blob/0.x/src/RequestFactory.php][] and the corresponding `testUploadsArray()` methods at [https://github.com/request-interop/impl/blob/0.x/tests/RequestFactoryTestCase.php][].
+Cf. the reference implementation of `uploadsArray()` at [https://github.com/request-interop/impl/blob/1.x/src/RequestFactory.php][] and the corresponding `testUploadsArray()` methods at [https://github.com/request-interop/impl/blob/1.x/tests/RequestFactoryTestCase.php][].

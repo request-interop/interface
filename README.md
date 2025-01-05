@@ -98,7 +98,7 @@ Notes:
 
 The _Url_ interface represents the URL of the request. It defines these properties and methods:
 
-- `?string $scheme { get; }` corresponds to the `host` key from `parse_url()`.
+- `?string $scheme { get; }` corresponds to the `scheme` key from `parse_url()`.
 
 - `?string $host { get; }` corresponds to the `host` key from `parse_url()`.
 
@@ -308,6 +308,6 @@ This package is an intellectual descendant of that RFC, similar in form but much
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
 [RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
 [README-UPLOADS.md]: ./README-UPLOADS.md
-[The Real Difference Between a URL and a URI]: https://danielmiessler.com/p/difference-between-uri-url/
+[The Real Difference Between a URL and a URI]: https://danielmiessler.com/study/difference-between-uri-url/
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml
 [README-PSR-7.md]: ./README-PSR-7.md

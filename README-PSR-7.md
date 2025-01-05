@@ -4,7 +4,7 @@
 
 ## PSR-7
 
-PSR-7 was born to answer the question, "How can we model HTTP messages in PHP for sending a request, and getting back a response?" That is, how can we standardize the model of an HTTP request message for sending, and the model of the returned the HTTP response, when using PHP as an HTTP client?
+PSR-7 was born to answer the question, "How can we model HTTP messages in PHP for sending a request, and getting back a response?" That is, how can we standardize the model of an HTTP request message for sending, and the model of the returned HTTP response, when using PHP as an HTTP client?
 
 The entrance vote passed in Jan 2014 after about a year of pre-work, with Michael "Guzzle" Dowling as lead (<https://groups.google.com/d/topic/php-fig/H1Lr7FYxj94/discussion>). You can see the original draft at <https://github.com/php-fig/fig-standards/pull/244/files>.
 
@@ -30,13 +30,13 @@ At this point, we see that PSR-7 has been expanded to answer a second question: 
 
 It is during MWOP’s tenure, [before the successful acceptance vote](https://groups.google.com/d/topic/php-fig/0baLqR6Rvcg/discussion) in May 2015, that we see the PSR-7 interfaces expand in number, and become "immutable" (though inconsistently so).
 
-So we can see that the purpose of PSR-7 is to model [2 sets of HTTP messages using 7 interfaces](http://www.php-fig.org/psr/psr-7/): one set for when PHP sends a request and receives a response, and an addition set for when PHP receives a request and sends a response.
+So we can see that the purpose of PSR-7 is to model [2 sets of HTTP messages using 7 interfaces](http://www.php-fig.org/psr/psr-7/): one set for when PHP sends a request and receives a response, and an additional set for when PHP receives a request and sends a response.
 
 ## RequestInterop
 
 RequestInterop starts out by asking a different question. It is not concerned with modeling HTTP messages, whether sending or receiving them.
 
-Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Becuase RequestInterop begins with a different question, it leads to a different answer: a _Request_ interface that exposes only properties, mimicking PHP’s superglobals.
+Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Because RequestInterop begins with a different question, it leads to a different answer: a _Request_ interface that exposes only properties, mimicking PHP’s superglobals.
 
 ## Other Differences
 

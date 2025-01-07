@@ -6,39 +6,43 @@ namespace RequestInterop\Interface;
 /**
  * @phpstan-type CookiesArray array<string, string>
  *
- * @phpstan-type FilesArray mixed[]
+ * @phpstan-type FilesArrayValue FilesArrayItem|FilesArrayGroup|FilesArray
+ * @phpstan-type FilesArray array<array-key, FilesArrayValue>
  *
  * @phpstan-type FilesArrayItem array{
- *     tmp_name:string,
- *     error:int,
- *     name?:string,
- *     full_path?:string,
- *     type?:string,
- *     size?:int,
+ *     tmp_name: non-empty-string,
+ *     error: HttpUploadErrorCode,
+ *     name?: non-empty-string,
+ *     full_path?: non-empty-string,
+ *     type?: non-empty-string,
+ *     size?: positive-int
  * }
  *
  * @phpstan-type FilesArrayGroup array{
- *     tmp_name:string[],
- *     error:int[],
- *     name?:string[],
- *     full_path?:string[],
- *     type?:string[],
- *     size?:int[],
+ *     tmp_name: array<int, non-empty-string>,
+ *     error: array<int, HttpUploadErrorCode>,
+ *     name?: array<int, non-empty-string>,
+ *     full_path?: array<int, non-empty-string>,
+ *     type?: array<int, non-empty-string>,
+ *     size?: array<int, positive-int>
  * }
  *
- * @phpstan-type HeadersArray array<lowercase-string, string>
+ * @phpstan-type HeadersArray array<lowercase-string, non-empty-string>
  *
- * @phpstan-type InputArray mixed[]
+ * @phpstan-type InputArrayValue null|scalar|InputArray
+ * @phpstan-type InputArray array<array-key, InputArrayValue>
  *
- * @phpstan-type ScalarArray mixed[]
+ * @phpstan-type HttpMethod 'GET'|'POST'|'PUT'|'DELETE'|'HEAD'|'OPTIONS'|'PATCH'|'TRACE'|'CONNECT'
  *
- * @phpstan-type MethodString uppercase-string
+ * @phpstan-type QueryArrayValue string|QueryArray
+ * @phpstan-type QueryArray array<array-key, QueryArrayValue>
  *
- * @phpstan-type QueryArray mixed[]
+ * @phpstan-type ServerArray array<non-empty-string, string>
  *
- * @phpstan-type ServerArray array<string, string>
+ * @phpstan-type UploadsArrayValue Upload|UploadsArray
+ * @phpstan-type UploadsArray array<array-key, UploadsArrayValue>
  *
- * @phpstan-type UploadsArray mixed[]
+ * @phpstan-type HttpUploadErrorCode int<0, 8>
  */
 interface Request
 {
@@ -54,7 +58,7 @@ interface Request
     /** @var InputArray */
     public array $input { get; }
 
-    /** @var MethodString */
+    /** @var HttpMethod */
     public string $method { get; }
 
     /** @var QueryArray */

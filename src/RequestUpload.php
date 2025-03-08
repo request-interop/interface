@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace RequestInterop\Interface;
 
-interface Upload
+use Stringable;
+
+interface RequestUpload
 {
     public string $tmpName { get; }
 
@@ -17,5 +19,7 @@ interface Upload
 
     public ?int $size { get; }
 
-    public function move(string $to) : bool;
+    public ?RequestBody $body { get; }
+
+    public function move(string|Stringable $to) : bool;
 }

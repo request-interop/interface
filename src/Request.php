@@ -4,67 +4,42 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 /**
- * @phpstan-type CookiesArray array<string, string>
- *
- * @phpstan-type FilesArray mixed[]
- *
- * @phpstan-type FilesArrayItem array{
- *     tmp_name:string,
- *     error:int,
- *     name?:string,
- *     full_path?:string,
- *     type?:string,
- *     size?:int,
- * }
- *
- * @phpstan-type FilesArrayGroup array{
- *     tmp_name:string[],
- *     error:int[],
- *     name?:string[],
- *     full_path?:string[],
- *     type?:string[],
- *     size?:int[],
- * }
- *
- * @phpstan-type HeadersArray array<lowercase-string, string>
- *
- * @phpstan-type InputArray mixed[]
- *
- * @phpstan-type ScalarArray mixed[]
- *
- * @phpstan-type MethodString uppercase-string
- *
- * @phpstan-type QueryArray mixed[]
- *
- * @phpstan-type ServerArray array<string, string>
- *
- * @phpstan-type UploadsArray mixed[]
+ * @phpstan-import-type cookies_array from RequestTypeAliases
+ * @phpstan-import-type files_array from RequestTypeAliases
+ * @phpstan-import-type headers_array from RequestTypeAliases
+ * @phpstan-import-type input_array from RequestTypeAliases
+ * @phpstan-import-type method_string from RequestTypeAliases
+ * @phpstan-import-type query_array from RequestTypeAliases
+ * @phpstan-import-type server_array from RequestTypeAliases
+ * @phpstan-import-type uploads_array from RequestTypeAliases
  */
 interface Request
 {
-    /** @var CookiesArray */
+    public ?RequestBody $body { get; }
+
+    /** @var cookies_array */
     public array $cookies { get; }
 
-    /** @var FilesArray */
+    /** @var files_array */
     public array $files { get; }
 
-    /** @var HeadersArray */
+    /** @var headers_array */
     public array $headers { get; }
 
-    /** @var InputArray */
+    /** @var input_array */
     public array $input { get; }
 
-    /** @var MethodString */
+    /** @var method_string */
     public string $method { get; }
 
-    /** @var QueryArray */
+    /** @var query_array */
     public array $query { get; }
 
-    /** @var ServerArray */
+    /** @var server_array */
     public array $server { get; }
 
-    /** @var UploadsArray */
+    /** @var uploads_array */
     public array $uploads { get; }
 
-    public Url $url { get; }
+    public RequestUrl $url { get; }
 }

@@ -15,7 +15,9 @@
         }
     },
     "require": {
-        "php": "^8.4"
+        "php": ">=8.4",
+        "stream-interop/interface": "1.x@dev",
+        "uri-interop/interface": "1.x@dev"
     },
     "require-dev": {
         "pds/skeleton": "^1.0",

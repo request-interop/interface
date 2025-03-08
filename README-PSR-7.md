@@ -1,4 +1,4 @@
-# PSR-7 vs RequestInterop
+# PSR-7 vs Request-Interop
 
 (Some portions copied, with light editing, from <https://paul-m-jones.com/post/2017/01/05/psr-7-vs-the-serverrequestresponse-rfc/>.)
 
@@ -32,11 +32,11 @@ It is during MWOP’s tenure, [before the successful acceptance vote](https://gr
 
 So we can see that the purpose of PSR-7 is to model [2 sets of HTTP messages using 7 interfaces](http://www.php-fig.org/psr/psr-7/): one set for when PHP sends a request and receives a response, and an additional set for when PHP receives a request and sends a response.
 
-## RequestInterop
+## Request-Interop
 
-RequestInterop starts out by asking a different question. It is not concerned with modeling HTTP messages, whether sending or receiving them.
+Request-Interop starts out by asking a different question. It is not concerned with modeling HTTP messages, whether sending or receiving them.
 
-Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Because RequestInterop begins with a different question, it leads to a different answer: a _Request_ interface that exposes only properties, mimicking PHP’s superglobals.
+Instead, it asks: "How can we take the request-related superglobals in PHP and encapsulate them in objects, to make them at least a little more object-oriented?" Because Request-Interop begins with a different question, it leads to a different answer: a _Request_ interface that exposes only properties, mimicking PHP’s superglobals.
 
 ## Other Differences
 
@@ -44,7 +44,7 @@ There are some additional differences not included above, all specific to the PS
 
 ### Immutability
 
-RequestInterop requires that implementations advertised as readonly or immutable be **deeply** readonly or immutable. _ServerRequestInterface_ makes no such demand; instead, it explicitly allows mutability in various ways, most notably the _StreamInterface_ but also the attributes and parsed body.
+Request-Interop requires that implementations advertised as readonly or immutable be **deeply** readonly or immutable. _ServerRequestInterface_ makes no such demand; instead, it explicitly allows mutability in various ways, most notably the _StreamInterface_ but also the attributes and parsed body.
 
 ### Attributes and Application State
 
@@ -52,12 +52,12 @@ _ServerRequestInterface_ does not only model the incoming HTTP request message. 
 
 (Cf. [ServerRequestInterface::getAttributes()](https://github.com/php-fig/http-message/blob/master/src/ServerRequestInterface.php#L202-L206)).
 
-RequestInterop does not provide a space for application-specific context. It limits itself to the PHP superglobals and values calculated from them alone.
+Request-Interop does not provide a space for application-specific context. It limits itself to the PHP superglobals and values calculated from them alone.
 
 ### Parsed Body vs `$input`
 
-Whereas _ServerRequestInterface_ comes down on one side regarding the ["parsed body"](https://www.php-fig.org/psr/psr-7/meta/#why-parsed-body-in-the-serverrequestinterface) type and structure, RequestInterop comes down on the opposite side.
+Whereas _ServerRequestInterface_ comes down on one side regarding the ["parsed body"](https://www.php-fig.org/psr/psr-7/meta/#why-parsed-body-in-the-serverrequestinterface) type and structure, Request-Interop comes down on the opposite side.
 
 The _ServerRequestInterface_ solution allows an array **or object** to be the "parsed body". Further, any object at all may be part of that "parsed body". This has the benefit of flexibility, in that anything at all may be parsed out the request body. The drawbacks are that it is ambiguous, difficult to typehint, and makes it easy to break expectations of the immutability otherwise promised by the interface.
 
-RequestInterop, on the other hand, restricts its corresponding `$input` property to an array whose values are nulls, scalars, or (recursively) arrays of nulls and scalars. This eliminates any possibility of mutable elements contained in an otherwise readonly or immutable object, at the cost of disallowing objects and resources in the `$input`. This also provides consistency and comparability with the PHP superglobals.
+Request-Interop, on the other hand, restricts its corresponding `$input` property to an array whose values are nulls, scalars, or (recursively) arrays of nulls and scalars. This eliminates any possibility of mutable elements contained in an otherwise readonly or immutable object, at the cost of disallowing objects and resources in the `$input`. This also provides consistency and comparability with the PHP superglobals.

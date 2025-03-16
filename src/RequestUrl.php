@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace RequestInterop\Interface;
 
-use UriInterop\Interface\Uri;
+use UriInterop\Interface\StringableComponents;
 
-interface RequestUrl extends Uri
+interface RequestUrl extends StringableComponents
 {
 }

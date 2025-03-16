@@ -70,6 +70,8 @@ Notes:
 
 - **The `$body` property may be null.** Not all implementations require the presence of the raw request body.
 
+- **There is no requirement to keep `$query` and `$url->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
+
 ### _RequestUpload_
 
 The _RequestUpload_ interface represents a single uploaded file. It defines these properties and methods:
@@ -105,15 +107,15 @@ Notes:
 
 ### _RequestBody_
 
-The _RequestBody_ interface extends [_StringableStream_] to afford idempotent reading from the raw content of a _Request_ or a _RequestUpload_. It defines no additional properties or methods.
+The _RequestBody_ interface extends [Stream-Interop _StringableStream_] to afford idempotent reading from the raw content of a _Request_ or a _RequestUpload_. It defines no additional properties or methods.
 
-Implementations MAY be advertised as readonly only if they implement the [_ReadonlyStream_] interface and adhere to its constraints.
+Implementations MAY be advertised as readonly only if they implement the [Stream-Interop _ReadonlyStream_] interface and adhere to its constraints.
 
-Implementations MAY be advertised as immutable only if they implement the [_ImmutableStream_] interface and adhere to its constraints.
+Implementations MAY be advertised as immutable only if they implement the [Stream-Interop _ImmutableStream_] interface and adhere to its constraints.
 
 ### _RequestUrl_
 
-The _RequestUrl_ interface extends [_Uri_] to afford reading the requested URL component values. It defines no additional properties or methods.
+The _RequestUrl_ interface extends [Uri-Interop _StringableComponents_] to afford reading the requested URL component values. It defines no additional properties or methods.
 
 Implementations MUST validate that the scheme component and the host component are present and non-blank; when blank or not present, implementations MUST throw [_LogicException_][] (or an extension thereof).
 
@@ -265,11 +267,11 @@ This package is an intellectual descendant of that RFC, similar in form but much
 
 * * *
 
-[_ImmutableStream_]: https://github.com/stream-interop/interface#immutablestream
+[Stream-Interop _ImmutableStream_]: https://github.com/stream-interop/interface#immutablestream
 [_LogicException_]: https://php.net/LogicException
-[_ReadonlyStream_]: https://github.com/stream-interop/interface#readonlystream
-[_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
-[_Uri_]: https://github.com/uri-interop/interface#uri
+[Stream-Interop _ReadonlyStream_]: https://github.com/stream-interop/interface#readonlystream
+[Stream-Interop _StringableStream_]: https://github.com/stream-interop/interface#stringablestream
+[Uri-Interop _StringableComponents_]: https://github.com/uri-interop/interface#uri
 [`fopen()`]: https://php.net/fopen
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml

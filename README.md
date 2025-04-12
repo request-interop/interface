@@ -1,4 +1,4 @@
-# Request-Interop Interface Package
+# Request-Interop Standard Interface Package
 
 This package provides a standard set of interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects and refines the common practices of over a dozen different userland projects.
 
@@ -8,13 +8,12 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Request-Interop defines the following interfaces:
 
-- _Request_ to represent the incoming request.
-- _RequestUpload_ to represent an uploaded file.
-- _RequestBody_ to represent the raw content of the request or an uploaded file.
-- _RequestUrl_ to represent the requested URL.
-- _RequestFactory_ to create instances of the above.
+- [_Request_][] to represent the incoming request.
+- [_RequestUpload_][] to represent an uploaded file.
+- [_RequestUrl_][] to represent the requested URL.
+- [_RequestFactory_][] to create instances of the above.
 
-It also defines a _RequestTypeAliases_ interface with PHPStan types to aid static analysis.
+It also defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
 
 Notes:
 
@@ -24,7 +23,7 @@ Notes:
 
 ### _Request_
 
-The _Request_ interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
+The [_Request_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
 
 - `cookies_array $cookies { get; }`
     - Corresponds to a copy of the `$_COOKIES` superglobal array or its equivalent.
@@ -54,7 +53,7 @@ The _Request_ interface represents copies of the PHP superglobals (or their equi
     - Corresponds to a copy of the `$_SERVER` superglobal array or its equivalent.
 
 - `uploads_array $uploads { get; }`
-    - An array of _RequestUpload_ instances.
+    - An array of [_RequestUpload_][] instances.
     - The values SHOULD be derived from `$_FILES` or its equivalent.
     - The index structure MUST correspond to the structure in which the uploaded files were indexed; cf. [README-UPLOADS.md][].
 
@@ -62,19 +61,19 @@ The _Request_ interface represents copies of the PHP superglobals (or their equi
     - Corresponds to the requested URL.
     - The values SHOULD be derived from `$_SERVER` or its equivalent.
 
-- `?RequestBody $body { get; }`
+- `?StringableStream $body { get; }`
     - Corresponds to the raw request content.
     - The encapsulated resource SHOULD be `php://input` but MAY be some other resource.
 
 Notes:
 
-- **The `$body` property may be null.** Not all implementations require the presence of the raw request body.
+- **The `$body` property is a [Stream-Interop _StringableStream_].** This affords idempotent reading from the raw content of a [_Request_][].
 
 - **There is no requirement to keep `$query` and `$url->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
 
 ### _RequestUpload_
 
-The _RequestUpload_ interface represents a single uploaded file. It defines these properties and methods:
+The [_RequestUpload_][] interface represents a single uploaded file. It defines these properties and methods:
 
 - `string $tmpName { get; }`
     - Corresponds to the `'tmp_name'` key in a `files_item_array`.
@@ -94,28 +93,19 @@ The _RequestUpload_ interface represents a single uploaded file. It defines thes
 - `?int $size { get; }`
     - Corresponds to the `'size'` key in a `files_item_array`.
 
-- `?RequestBody $body { get; }`
+- `?StringableStream $body { get; }`
     - Corresponds to the raw upload content.
     - The encapsulated resource MUST be the `$tmpName` file.
 
-- `move(string|Stringable $to) : bool`
-    - Moves the uploaded file to another location, usually via `move_uploaded_file()`.
-
 Notes:
 
-- **The `$body` property may be null.** Not all implementations require the presence of the raw upload body.
+- **The `$body` property is a [Stream-Interop _StringableStream_].** This affords idempotent reading from the raw content of a [_RequestUpload_][].
 
-### _RequestBody_
-
-The _RequestBody_ interface extends [Stream-Interop _StringableStream_] to afford idempotent reading from the raw content of a _Request_ or a _RequestUpload_. It defines no additional properties or methods.
-
-Implementations MAY be advertised as readonly only if they implement the [Stream-Interop _ReadonlyStream_] interface and adhere to its constraints.
-
-Implementations MAY be advertised as immutable only if they implement the [Stream-Interop _ImmutableStream_] interface and adhere to its constraints.
+-- **There is no `move()` method.** Moving an uploaded file is an application-specific concern, independent from any specific [_RequestUpload_][] implementation.
 
 ### _RequestUrl_
 
-The _RequestUrl_ interface extends [Uri-Interop _StringableComponents_] to afford reading the requested URL component values. It defines no additional properties or methods.
+The [_RequestUrl_][] interface extends [Uri-Interop _UriRecord_] to afford reading the requested URL component values. It defines no additional properties or methods.
 
 Implementations MUST validate that the scheme component and the host component are present and non-blank; when blank or not present, implementations MUST throw [_LogicException_][] (or an extension thereof).
 
@@ -125,9 +115,9 @@ Notes:
 
 ### _RequestFactory_
 
-The _RequestFactory_ interface defines the following methods.
+The [_RequestFactory_][] interface defines the following methods.
 
-- `newRequest()` returns a new _Request_ instance:
+- `newRequest()` returns a new [_Request_][] instance:
 
     ```php
     public function newRequest(
@@ -140,11 +130,17 @@ The _RequestFactory_ interface defines the following methods.
         ?server_array $server = null,
         ?uploads_array $uploads = null,
         ?RequestUrl $url = null,
-        ?RequestBody $body = null,
+        ?StringableStream $body = null,
     ) : Request;
     ```
 
-- `newRequestUpload()` returns a new _RequestUpload_ instance:
+- `newRequestBody()` returns a new [_StringableStream_][] instance for a [_Request_][] `$body`:
+
+    ```php
+    public function newRequestBody(string|resource $spec) : StringableStream;
+    ```
+
+- `newRequestUpload()` returns a new [_RequestUpload_][] instance:
 
     ```php
     public function newRequestUpload(
@@ -154,17 +150,17 @@ The _RequestFactory_ interface defines the following methods.
         ?string $fullPath = null,
         ?string $type = null,
         ?int $size = null,
-        ?RequestBody $body = null,
+        ?StringableStream $body = null,
     ) : RequestUpload;
     ```
 
-- `newRequestBody()` returns a new _RequestBody_ instance:
+- `newRequestUploadBody()` returns a new [_StringableStream_][] instance for a [_RequestUpload_][] `$body`:
 
     ```php
-    public function newRequestBody(string|resource $spec) : RequestBody;
+    public function newRequestUploadBody(string|resource $spec) : StringableStream;
     ```
 
-- `newRequestUrl()` returns a new _RequestUrl_ instance:
+- `newRequestUrl()` returns a new [_RequestUrl_][] instance:
 
     ```php
     public function newRequestUrl(server_array $server) : RequestUrl;
@@ -174,9 +170,11 @@ Notes:
 
 - **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the default implementation object, such as one created from the superglobals.
 
-- **The first two `newRequestUpload()` arguments are required.** A _RequestUpload_ MUST have at least a `$tmpName` and an `$error` code; all other values are optional, including the raw body content.
-
 - **The `newRequestBody()` method `$spec` argument is either a string or a resource.** If the `$spec` is a string, implementations MUST treat it as a filename to be opened as a resource, as if by [`fopen()`][], in whatever mode the implementation finds appropriate.
+
+- **The first two `newRequestUpload()` arguments are required.** A [_RequestUpload_][] MUST have at least a `$tmpName` and an `$error` code; all other values are optional, including the raw body content.
+
+- **The `newRequestUploadBody()` method `$spec` argument is either a string or a resource.** If the `$spec` is a string, implementations MUST treat it as a filename to be opened as a resource, as if by [`fopen()`][], in whatever mode the implementation finds appropriate.
 
 ### _RequestTypeAliases_
 
@@ -220,7 +218,7 @@ The _RequestTypeAliases_ interface provides these custom PHPStan types to aid st
 
 - `server_array`: `array<string, string>`
 
-- `uploads_array`: `array<array-key, RequestUpload|uploads_array>` -- recursively up to 16 dimensions.
+- `uploads_array`: `array<array-key, RequestUpload|uploads_array>` recursively up to 16 dimensions.
 
 Notes:
 
@@ -232,12 +230,11 @@ Notes:
 
 - **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case. For example, Microsoft IIS adds `IIS_WasUrlRewritten`.
 
-
 ## Implementations
 
-Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of _RequestBody_ implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
+Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of _StringableStream_ implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
 
-Implementations MAY define additional elements not specified in these interfaces; implementations advertised as readonly or immutable MUST make those additional elements deeply readonly or immutable.
+Implementations MAY define additional class members not specified in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
 
 Notes:
 
@@ -257,21 +254,21 @@ In short:
 
 - _ServerRequestInterface_ attempts to model the incoming HTTP request message, plus application-specific context, with shallow and inconsistent immutability requirements.
 
-- Request-Interop attempts to model the PHP superglobals, provides no space for application context, and requires that readonly or immutable implementations to be deeply so.
+- Request-Interop attempts to model the PHP superglobals, provides no space for application context, and requires readonly or immutable implementations to be deeply so.
 
 A longer answer is at [README-PSR-7.md][].
 
 ### How is Request-Interop different from the [Server-Side Request and Response Objects RFC](https://wiki.php.net/rfc/response)?
 
-This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URL, and the uploads array properties remain. (Notably, the URL array is now a _RequestUrl_ interface.)
+This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URL, and the uploads array properties remain. (Notably, the URL array is now a [_RequestUrl_][] interface.)
 
 * * *
-
-[Stream-Interop _ImmutableStream_]: https://github.com/stream-interop/interface#immutablestream
+[_Request_]: #request
+[_RequestFactory_]: #requestfactory
+[_RequestUpload_]: #requestupload
+[_RequestUrl_]: #requesturl
+[_RequestTypeAliases_]: #requesttypealiases
 [_LogicException_]: https://php.net/LogicException
-[Stream-Interop _ReadonlyStream_]: https://github.com/stream-interop/interface#readonlystream
-[Stream-Interop _StringableStream_]: https://github.com/stream-interop/interface#stringablestream
-[Uri-Interop _StringableComponents_]: https://github.com/uri-interop/interface#uri
 [`fopen()`]: https://php.net/fopen
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml
@@ -279,4 +276,9 @@ This package is an intellectual descendant of that RFC, similar in form but much
 [README-UPLOADS.md]: ./README-UPLOADS.md
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
 [RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
+[Stream-Interop _ImmutableStream_]: https://github.com/stream-interop/interface#immutablestream
+[Stream-Interop _ReadonlyStream_]: https://github.com/stream-interop/interface#readonlystream
+[Stream-Interop _StringableStream_]: https://github.com/stream-interop/interface#stringablestream
+[_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
 [The Real Difference Between a URL and a URI]: https://danielmiessler.com/blog/difference-between-uri-url/
+[Uri-Interop _UriRecord_]: https://github.com/uri-interop/interface#urirecord

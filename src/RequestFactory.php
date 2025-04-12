@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace RequestInterop\Interface;
 
+use StreamInterop\Interface\StringableStream;
+
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
  * @phpstan-import-type files_array from RequestTypeAliases
@@ -35,8 +37,13 @@ interface RequestFactory
         ?array $server = null,
         ?array $uploads = null,
         ?RequestUrl $url = null,
-        ?RequestBody $body = null,
+        ?StringableStream $body = null,
     ) : Request;
+
+    /**
+     * @param string|resource $spec
+     */
+    public function newRequestBody(mixed $spec) : StringableStream;
 
     public function newRequestUpload(
         string $tmpName,
@@ -45,13 +52,13 @@ interface RequestFactory
         ?string $fullPath = null,
         ?string $type = null,
         ?int $size = null,
-        ?RequestBody $body = null,
+        ?StringableStream $body = null,
     ) : RequestUpload;
 
     /**
      * @param string|resource $spec
      */
-    public function newRequestBody(mixed $spec) : ?RequestBody;
+    public function newRequestUploadBody(mixed $spec) : StringableStream;
 
     /**
      * @param server_array $server

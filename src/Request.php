@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace RequestInterop\Interface;
 
+use StreamInterop\Interface\StringableStream;
+
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
  * @phpstan-import-type files_array from RequestTypeAliases
@@ -15,8 +17,6 @@ namespace RequestInterop\Interface;
  */
 interface Request
 {
-    public ?RequestBody $body { get; }
-
     /** @var cookies_array */
     public array $cookies { get; }
 
@@ -42,4 +42,6 @@ interface Request
     public array $uploads { get; }
 
     public RequestUrl $url { get; }
+
+    public ?StringableStream $body { get; }
 }

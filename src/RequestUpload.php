@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace RequestInterop\Interface;
 
-use Stringable;
+use StreamInterop\Interface\StringableStream;
 
 interface RequestUpload
 {
@@ -19,7 +19,5 @@ interface RequestUpload
 
     public ?int $size { get; }
 
-    public ?RequestBody $body { get; }
-
-    public function move(string|Stringable $to) : bool;
+    public ?StringableStream $body { get; }
 }

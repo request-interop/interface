@@ -4,19 +4,30 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 use StreamInterop\Interface\StringableStream;
+use UploadInterop\Interface\UploadTypeAliases;
+use UriInterop\Interface\UriStruct;
 
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
- * @phpstan-import-type files_array from RequestTypeAliases
+ *
+ * @phpstan-import-type files_array from UploadTypeAliases
+ *
  * @phpstan-import-type headers_array from RequestTypeAliases
+ *
  * @phpstan-import-type input_array from RequestTypeAliases
+ *
  * @phpstan-import-type method_string from RequestTypeAliases
+ *
  * @phpstan-import-type query_array from RequestTypeAliases
+ *
  * @phpstan-import-type server_array from RequestTypeAliases
- * @phpstan-import-type uploads_array from RequestTypeAliases
+ *
+ * @phpstan-import-type uploads_array from UploadTypeAliases
  */
-interface Request
+interface RequestStruct
 {
+    public StringableStream $body { get; }
+
     /** @var cookies_array */
     public array $cookies { get; }
 
@@ -41,7 +52,5 @@ interface Request
     /** @var uploads_array */
     public array $uploads { get; }
 
-    public RequestUrl $url { get; }
-
-    public ?StringableStream $body { get; }
+    public UriStruct $uri { get; }
 }

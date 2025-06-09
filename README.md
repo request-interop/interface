@@ -8,22 +8,22 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Request-Interop defines the following interfaces:
 
-- [_Request_][] to represent the incoming request.
-- [_RequestUpload_][] to represent an uploaded file.
-- [_RequestUrl_][] to represent the requested URL.
-- [_RequestFactory_][] to create instances of the above.
+- [_RequestStruct_][] to represent the incoming request.
+- [_RequestStructFactory_][] to create [_RequestStruct_][] instances.
 
-It also defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
+Request-Interop also defines a marker interface, [_RequestThrowable_][], for marking an [_Exception_][] as request-related.
+
+Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
 
 Notes:
 
-- **The interfaces define readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more usually idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
+### _RequestStruct_
 
-- **The interfaces define property hooks for `get` but not `set`.** The interfaces only guarantee readability; writability is outside the scope of this package.
+The [_RequestStruct_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
 
-### _Request_
-
-The [_Request_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
+- `StringableStream $body { get; }`
+    - Corresponds to the raw request content.
+    - The encapsulated resource SHOULD be `php://input`.
 
 - `cookies_array $cookies { get; }`
     - Corresponds to a copy of the `$_COOKIES` superglobal array or its equivalent.
@@ -33,94 +33,56 @@ The [_Request_][] interface represents copies of the PHP superglobals (or their 
 
 - `headers_array $headers { get; }`
     - Corresponds to an array of the request headers.
-    - The values SHOULD be derived from `$_SERVER` or its equivalent.
+    - The values SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
     - Each array key MUST be the header field name in lower-kebab-case.
 
 - `input_array $input { get; }`
     - Corresponds to an array of the request body values.
-    - The values SHOULD be a copy `$_POST` superglobal array or its equivalent.
+    - The values SHOULD be a copy of the `$_POST` superglobal array or its equivalent.
     - The values MAY be derived from a parsed or decoded representation of the request body.
 
 - `method_string $method { get; }`
     - Corresponds to the request method.
-    - The value SHOULD be derived from `$_SERVER` or its equivalent.
+    - The value SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
 
 - `query_array $query { get; }`
     - Corresponds to an array of the request query values.
-    - The values SHOULD be a copy of `$_GET` or its equivalent.
+    - The values SHOULD be a copy of the `$_GET` superglobal array or its equivalent.
 
 - `server_array $server { get; }`
     - Corresponds to a copy of the `$_SERVER` superglobal array or its equivalent.
 
 - `uploads_array $uploads { get; }`
-    - An array of [_RequestUpload_][] instances.
-    - The values SHOULD be derived from `$_FILES` or its equivalent.
-    - The index structure MUST correspond to the structure in which the uploaded files were indexed; cf. [README-UPLOADS.md][].
+    - An array of [_UploadStruct_][] instances.
+    - The values SHOULD be derived from the `$_FILES` superglobal array or its equivalent.
 
-- `RequestUrl $url { get; }`
-    - Corresponds to the requested URL.
-    - The values SHOULD be derived from `$_SERVER` or its equivalent.
-
-- `?StringableStream $body { get; }`
-    - Corresponds to the raw request content.
-    - The encapsulated resource SHOULD be `php://input` but MAY be some other resource.
+- `UriStruct $uri { get; }`
+    - Corresponds to the requested URI.
+    - The values SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
 
 Notes:
 
-- **The `$body` property is a [Stream-Interop _StringableStream_].** This affords idempotent reading from the raw content of a [_Request_][].
+- **The interface defines readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
 
-- **There is no requirement to keep `$query` and `$url->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
+- **The interfaces defines property hooks for `get` but not `set`.** The interface only guarantees readability; writability is outside the scope of this package.
 
-### _RequestUpload_
+- **There is no requirement to keep `$query` and `$uri->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
 
-The [_RequestUpload_][] interface represents a single uploaded file. It defines these properties and methods:
+- **The `$body` property is a [Stream-Interop][] [_StringableStream_][].**
 
-- `string $tmpName { get; }`
-    - Corresponds to the `'tmp_name'` key in a `files_item_array`.
+- **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].**
 
-- `int $error { get; }`
-    - Corresponds to the `'error'` key in a `files_item_array`.
+- **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].**
 
-- `?string $name { get; }`
-    - Corresponds to the `'name'` key in a `files_item_array`.
+### _RequestStructFactory_
 
-- `?string $fullPath { get; }`
-    - Corresponds to the `'full_path'` key in a `files_item_array`.
+The [_RequestStructFactory_][] affords one creation method.
 
-- `?string $type { get; }`
-    - Corresponds to the `'type'` key in a `files_item_array`.
-
-- `?int $size { get; }`
-    - Corresponds to the `'size'` key in a `files_item_array`.
-
-- `?StringableStream $body { get; }`
-    - Corresponds to the raw upload content.
-    - The encapsulated resource MUST be the `$tmpName` file.
-
-Notes:
-
-- **The `$body` property is a [Stream-Interop _StringableStream_].** This affords idempotent reading from the raw content of a [_RequestUpload_][].
-
--- **There is no `move()` method.** Moving an uploaded file is an application-specific concern, independent from any specific [_RequestUpload_][] implementation.
-
-### _RequestUrl_
-
-The [_RequestUrl_][] interface extends [Uri-Interop _UriRecord_] to afford reading the requested URL component values. It defines no additional properties or methods.
-
-Implementations MUST validate that the scheme component and the host component are present and non-blank; when blank or not present, implementations MUST throw [_LogicException_][] (or an extension thereof).
-
-Notes:
-
-- **The interface is for a URL, not a URI.** This is because the scheme and host URI components must be present and non-blank (i.e. a non-empty string of something other than whitespace characters). Cf. [The Real Difference Between a URL and a URI][]: "A URL is a more specific version of a URI, so if the protocol is given or implied you should probably use URL."
-
-### _RequestFactory_
-
-The [_RequestFactory_][] interface defines the following methods.
-
-- `newRequest()` returns a new [_Request_][] instance:
+- `newRequest()` returns a new [_RequestStruct_][] instance:
 
     ```php
     public function newRequest(
+        ?StringableStream $body = null,
         ?cookies_array $cookies = null,
         ?files_array $files = null,
         ?headers_array $headers = null,
@@ -129,84 +91,23 @@ The [_RequestFactory_][] interface defines the following methods.
         ?query_array $query = null,
         ?server_array $server = null,
         ?uploads_array $uploads = null,
-        ?RequestUrl $url = null,
-        ?StringableStream $body = null,
-    ) : Request;
-    ```
-
-- `newRequestBody()` returns a new [_StringableStream_][] instance for a [_Request_][] `$body`:
-
-    ```php
-    public function newRequestBody(string|resource $spec) : StringableStream;
-    ```
-
-- `newRequestUpload()` returns a new [_RequestUpload_][] instance:
-
-    ```php
-    public function newRequestUpload(
-        string $tmpName,
-        int $error,
-        ?string $name = null,
-        ?string $fullPath = null,
-        ?string $type = null,
-        ?int $size = null,
-        ?StringableStream $body = null,
-    ) : RequestUpload;
-    ```
-
-- `newRequestUploadBody()` returns a new [_StringableStream_][] instance for a [_RequestUpload_][] `$body`:
-
-    ```php
-    public function newRequestUploadBody(string|resource $spec) : StringableStream;
-    ```
-
-- `newRequestUrl()` returns a new [_RequestUrl_][] instance:
-
-    ```php
-    public function newRequestUrl(server_array $server) : RequestUrl;
+        ?UriStruct $uri = null,
+    ) : RequestStruct;
     ```
 
 Notes:
 
-- **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the default implementation object, such as one created from the superglobals.
+- **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the default implementation [_RequestStruct_][], such as one created from the superglobals.
 
-- **The `newRequestBody()` method `$spec` argument is either a string or a resource.** If the `$spec` is a string, implementations MUST treat it as a filename to be opened as a resource, as if by [`fopen()`][], in whatever mode the implementation finds appropriate.
+### _RequestThrowable_
 
-- **The first two `newRequestUpload()` arguments are required.** A [_RequestUpload_][] MUST have at least a `$tmpName` and an `$error` code; all other values are optional, including the raw body content.
-
-- **The `newRequestUploadBody()` method `$spec` argument is either a string or a resource.** If the `$spec` is a string, implementations MUST treat it as a filename to be opened as a resource, as if by [`fopen()`][], in whatever mode the implementation finds appropriate.
+The _RequestThrowable_ interface extends [_Throwable_][] to mark an [_Exception_][] as request-related. It adds no new class members.
 
 ### _RequestTypeAliases_
 
 The _RequestTypeAliases_ interface provides these custom PHPStan types to aid static analysis:
 
 - `cookies_array`: `array<string, string>`
-
-- `files_array`: `array<array-key, files_group_array|files_item_array|files_array>` recursively up to 16 dimensions.
-
-- `files_group_array`:
-    ```
-    array{
-        tmp_name:string[],
-        error:int[],
-        name?:string[],
-        full_path?:string[],
-        type?:string[],
-        size?:int[],
-    }
-    ```
-
-- `files_item_array`:
-    ```
-    array{
-        tmp_name:string,
-        error:int,
-        name?:string,
-        full_path?:string,
-        type?:string,
-        size?:int,
-    }
-    ```
 
 - `headers_array`: `array<lowercase-string, string>`
 
@@ -218,21 +119,17 @@ The _RequestTypeAliases_ interface provides these custom PHPStan types to aid st
 
 - `server_array`: `array<string, string>`
 
-- `uploads_array`: `array<array-key, RequestUpload|uploads_array>` recursively up to 16 dimensions.
-
 Notes:
-
-- **The `files_*` types are defined from the `$_FILES` structure.** Cf. <https://www.php.net/manual/en/features.file-upload.post-method.php>.
 
 - **The `method_string` is not a _Method_ interface.** Usually the reason for a _Method_ interface is to define `is(string $method) : bool` to make sure the comparison values use matching cases. However, the custom `method_string` type is `uppercase-string`, which means static analysis should catch mismatched casing.
 
-- **The `query_array` type allows only  `string`, while `input_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `input_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
+- **The `query_array` type allows only `string`, while `input_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `input_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
 - **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case. For example, Microsoft IIS adds `IIS_WasUrlRewritten`.
 
 ## Implementations
 
-Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of _StringableStream_ implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
+Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of [_StringableStream_][] implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
 
 Implementations MAY define additional class members not specified in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
 
@@ -260,25 +157,26 @@ A longer answer is at [README-PSR-7.md][].
 
 ### How is Request-Interop different from the [Server-Side Request and Response Objects RFC](https://wiki.php.net/rfc/response)?
 
-This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URL, and the uploads array properties remain. (Notably, the URL array is now a [_RequestUrl_][] interface.)
+This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URL, and the uploads properties remain.
 
 * * *
-[_Request_]: #request
-[_RequestFactory_]: #requestfactory
-[_RequestUpload_]: #requestupload
-[_RequestUrl_]: #requesturl
+
+[_Exception_]: https://php.net/Exception
+[_RequestStruct_]: #requeststruct
+[_RequestStructFactory_]: #requeststructfactory
+[_RequestThrowable_]: #requestthrowable
 [_RequestTypeAliases_]: #requesttypealiases
-[_LogicException_]: https://php.net/LogicException
-[`fopen()`]: https://php.net/fopen
+[_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
+[_Throwable_]: https://php.net/Throwable
+[_UploadStruct_]: https://github.com/uri-interop/interface#uristruct
+[_UriStruct_]: https://github.com/uri-interop/interface#uristruct
+[`uploads_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml
 [README-PSR-7.md]: ./README-PSR-7.md
-[README-UPLOADS.md]: ./README-UPLOADS.md
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
 [RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
-[Stream-Interop _ImmutableStream_]: https://github.com/stream-interop/interface#immutablestream
-[Stream-Interop _ReadonlyStream_]: https://github.com/stream-interop/interface#readonlystream
-[Stream-Interop _StringableStream_]: https://github.com/stream-interop/interface#stringablestream
-[_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
+[Stream-Interop]: https://github.com/stream-interop/interface
 [The Real Difference Between a URL and a URI]: https://danielmiessler.com/blog/difference-between-uri-url/
-[Uri-Interop _UriRecord_]: https://github.com/uri-interop/interface#urirecord
+[Upload-Interop]: https://github.com/upload-interop/interface
+[Uri-Interop]: https://github.com/uri-interop/interface

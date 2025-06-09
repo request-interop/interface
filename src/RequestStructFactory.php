@@ -4,18 +4,28 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 use StreamInterop\Interface\StringableStream;
+use UploadInterop\Interface\UploadStructFactory;
+use UploadInterop\Interface\UploadTypeAliases;
+use UriInterop\Interface\UriStruct;
 
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
- * @phpstan-import-type files_array from RequestTypeAliases
+ *
+ * @phpstan-import-type files_array from UploadTypeAliases
+ *
  * @phpstan-import-type headers_array from RequestTypeAliases
+ *
  * @phpstan-import-type input_array from RequestTypeAliases
+ *
  * @phpstan-import-type method_string from RequestTypeAliases
+ *
  * @phpstan-import-type query_array from RequestTypeAliases
+ *
  * @phpstan-import-type server_array from RequestTypeAliases
- * @phpstan-import-type uploads_array from RequestTypeAliases
+ *
+ * @phpstan-import-type uploads_array from UploadTypeAliases
  */
-interface RequestFactory
+interface RequestStructFactory
 {
     /**
      * @param ?cookies_array $cookies
@@ -28,6 +38,7 @@ interface RequestFactory
      * @param ?uploads_array $uploads
      */
     public function newRequest(
+        ?StringableStream $body = null,
         ?array $cookies = null,
         ?array $files = null,
         ?array $headers = null,
@@ -36,32 +47,6 @@ interface RequestFactory
         ?array $query = null,
         ?array $server = null,
         ?array $uploads = null,
-        ?RequestUrl $url = null,
-        ?StringableStream $body = null,
-    ) : Request;
-
-    /**
-     * @param string|resource $spec
-     */
-    public function newRequestBody(mixed $spec) : StringableStream;
-
-    public function newRequestUpload(
-        string $tmpName,
-        int $error,
-        ?string $name = null,
-        ?string $fullPath = null,
-        ?string $type = null,
-        ?int $size = null,
-        ?StringableStream $body = null,
-    ) : RequestUpload;
-
-    /**
-     * @param string|resource $spec
-     */
-    public function newRequestUploadBody(mixed $spec) : StringableStream;
-
-    /**
-     * @param server_array $server
-     */
-    public function newRequestUrl(array $server) : RequestUrl;
+        ?UriStruct $uri = null,
+    ) : RequestStruct;
 }

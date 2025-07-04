@@ -15,8 +15,6 @@ Request-Interop also defines a marker interface, [_RequestThrowable_][], for mar
 
 Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
 
-Notes:
-
 ### _RequestStruct_
 
 The [_RequestStruct_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
@@ -27,9 +25,6 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals (or 
 
 - `cookies_array $cookies { get; }`
     - Corresponds to a copy of the `$_COOKIES` superglobal array or its equivalent.
-
-- `files_array $files { get; }`
-    - Corresponds to a copy of the `$_FILES` superglobal array or its equivalent.
 
 - `headers_array $headers { get; }`
     - Corresponds to an array of the request headers.
@@ -74,17 +69,17 @@ Notes:
 
 - **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].**
 
+- TODO: only $uploads, not $files. $uri SHOULD have scheme and host. (Does that make it a $url instead?)
+
 ### _RequestStructFactory_
 
-The [_RequestStructFactory_][] affords one creation method.
+The [_RequestStructFactory_][] interface affords creating a [_RequestStruct_][] instance:
 
-- `newRequest()` returns a new [_RequestStruct_][] instance:
-
+-
     ```php
     public function newRequest(
         ?StringableStream $body = null,
         ?cookies_array $cookies = null,
-        ?files_array $files = null,
         ?headers_array $headers = null,
         ?input_array $input = null,
         ?method_string $method = null,
@@ -97,11 +92,11 @@ The [_RequestStructFactory_][] affords one creation method.
 
 Notes:
 
-- **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the default implementation [_RequestStruct_][], such as one created from the superglobals.
+- **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the implementation's default [_RequestStruct_][], such as one created from the superglobals.
 
 ### _RequestThrowable_
 
-The _RequestThrowable_ interface extends [_Throwable_][] to mark an [_Exception_][] as request-related. It adds no new class members.
+The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an [_Exception_][] as request-related. It adds no class members.
 
 ### _RequestTypeAliases_
 
@@ -125,7 +120,10 @@ Notes:
 
 - **The `query_array` type allows only `string`, while `input_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `input_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
-- **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case. For example, Microsoft IIS adds `IIS_WasUrlRewritten`.
+- **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
+
+- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `input_array` and `query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
+
 
 ## Implementations
 
@@ -171,6 +169,7 @@ This package is an intellectual descendant of that RFC, similar in form but much
 [_UploadStruct_]: https://github.com/uri-interop/interface#uristruct
 [_UriStruct_]: https://github.com/uri-interop/interface#uristruct
 [`uploads_array`]: https://github.com/upload-interop/interface#uploadtypealiases
+[`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
 [project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml
 [README-PSR-7.md]: ./README-PSR-7.md

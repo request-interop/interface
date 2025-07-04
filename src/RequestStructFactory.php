@@ -4,14 +4,11 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 use StreamInterop\Interface\StringableStream;
-use UploadInterop\Interface\UploadStructFactory;
 use UploadInterop\Interface\UploadTypeAliases;
 use UriInterop\Interface\UriStruct;
 
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
- *
- * @phpstan-import-type files_array from UploadTypeAliases
  *
  * @phpstan-import-type headers_array from RequestTypeAliases
  *
@@ -29,7 +26,6 @@ interface RequestStructFactory
 {
     /**
      * @param ?cookies_array $cookies
-     * @param ?files_array $files
      * @param ?headers_array $headers
      * @param ?input_array $input
      * @param ?method_string $method
@@ -40,7 +36,6 @@ interface RequestStructFactory
     public function newRequest(
         ?StringableStream $body = null,
         ?array $cookies = null,
-        ?array $files = null,
         ?array $headers = null,
         ?array $input = null,
         ?string $method = null,

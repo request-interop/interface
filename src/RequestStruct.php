@@ -10,8 +10,6 @@ use UriInterop\Interface\UriStruct;
 /**
  * @phpstan-import-type cookies_array from RequestTypeAliases
  *
- * @phpstan-import-type files_array from UploadTypeAliases
- *
  * @phpstan-import-type headers_array from RequestTypeAliases
  *
  * @phpstan-import-type input_array from RequestTypeAliases
@@ -30,9 +28,6 @@ interface RequestStruct
 
     /** @var cookies_array */
     public array $cookies { get; }
-
-    /** @var files_array */
-    public array $files { get; }
 
     /** @var headers_array */
     public array $headers { get; }

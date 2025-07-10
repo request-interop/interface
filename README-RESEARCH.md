@@ -1,6 +1,6 @@
 # Research
 
-Request-Interop is based on research including the following projects:
+Request-Interop is based on research including the following projects, which model their request objects on the PHP superglobals:
 
 - [aura/web](https://github.com/auraphp/Aura.Web/blob/2.x/src/Request.php) (aura)
 - Cake 2 _CakeRequest_ (cake2)
@@ -9,7 +9,6 @@ Request-Interop is based on research including the following projects:
 - [horde/controller](https://github.com/horde/Controller/blob/horde_controller2/lib/Horde/Controller/Request/Http.php) (horde)
 - [joomla/input](https://github.com/joomla-framework/input/blob/3.x-dev/src/Input.php) (joomla)
 - [Klein](https://github.com/klein/klein.php/blob/master/src/Klein/Request.php) (klein)
-- [Lithium](https://github.com/UnionOfRAD/lithium/blob/1.3/action/Request.php) (lithium)
 - [MediaWiki](https://github.com/wikimedia/mediawiki/blob/master/includes/Request/WebRequest.php) (mediawiki)
 - [nette/http](https://github.com/nette/http/blob/master/src/Http/Request.php) (nette)
 - [Phalcon HTTP Request](https://github.com/phalcon/cphalcon/blob/v3.4.0/phalcon/http/request.zep) (phalcon)
@@ -18,30 +17,41 @@ Request-Interop is based on research including the following projects:
 - [tempestphp/tempest-framework](https://github.com/tempestphp/tempest-framework/blob/main/packages/http/src/IsRequest.php) (tempest)
 - [YAF](https://www.php.net/yaf) (yaf)
 - [yiisoft/yii2-dev](https://github.com/yiisoft/yii2/blob/5fb3f809c59f742537df77e0da1ad36a1175834a/framework/web/Request.php) (yii2)
+- [Zend Framework 1](https://github.com/zendframework/zf1/blob/master/library/Zend/Controller/Request/Http.php) (zf1)
 
-See also <https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml>.
+The following projects were considered but eventually excluded, because they attempt to model their request objects on HTTP messages instead of on the PHP superglobals:
+
+- Lithium [_lithium\\action\\Request_](https://github.com/UnionOfRAD/lithium/blob/1.3/action/Request.php)
+- PSR-7 [_Psr\\Http\\Message\\ServerRequestInterface_](https://github.com/php-fig/http-message/blob/master/src/ServerRequestInterface.php)
+- Zend Framework 2 [_Zend\\Http\\PhpEnvironment\\Request_](https://github.com/zendframework/zendframework/blob/release-2.4/library/Zend/Http/PhpEnvironment/Request.php)
+
+(The last two are remarkably similar.)
+
+See also <https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml> for an earlier version of this research.
+
 
 ## Mutability
 
-The projects offer varying levels of nominal mutability. Note that "readonly" in this case means the project does not allow *public* mutability; formal `readonly` might not be in place, thus allowing mutablity within protected or private scopes, but not from outside the object.
+The projects offer varying levels of nominal mutability. Note that "readonly" here means the project does not allow *public* mutability; formal `readonly` might not be in place, thus allowing mutablity within protected or private scopes, but not from outside the object.
 
-|           | Readonly | Mutable | Immutable |
-| --------- | -------- | ------- | --------- |
-| aura      | x        |         |           |
-| cake2     |          | x       |           |
-| ci3       | x        |         |           |
-| flight    |          | x       |           |
-| horde     | x        |         |           |
-| joomla    | x        |         |           |
-| klein     | x        |         |           |
-| lithium   |          | x       |           |
-| mediawiki |          | x       |           |
-| nette     | x        |         |           |
-| phalcon   | x        |         |           |
-| symfony   |          | x       |           |
-| tempest   | x        |         |           |
-| yaf       | x        |         |           |
-| yii2      |          | x       |           |
+|           | Readonly | Mutable |
+| --------- | -------- | ------- |
+| aura      | x        |         |
+| cake2     |          | x       |
+| ci3       | x        |         |
+| flight    |          | x       |
+| horde     | x        |         |
+| joomla    | x        |         |
+| klein     | x        |         |
+| mediawiki |          | x       |
+| nette     | x        |         |
+| phalcon   | x        |         |
+| symfony   |          | x       |
+| tempest   | x        |         |
+| yaf       | x        |         |
+| yii2      |          | x       |
+| zf1       |          | x       |
+
 
 None of the researched projects advertise immutablity.
 
@@ -60,7 +70,6 @@ The projects provide access to the most or all of the following superglobals via
 | horde     | `getGetVars()`         | `array`                   |
 | joomla    | `$get`                 | _Input_ class             |
 | klein     | `paramsGet()`          | _DataCollection_ class    |
-| lithium   | `$query`               | `array`                   |
 | mediawiki | `getQueryValuesOnly()` | `array`                   |
 | nette     | `getQuery()`           | `array`                   |
 | phalcon   | `getQuery()`           | `array`                   |
@@ -69,6 +78,8 @@ The projects provide access to the most or all of the following superglobals via
 | tempest   | `$query`               | `array`                   |
 | yaf       | `getQuery()`           | `array`                   |
 | yii2      | `getQueryParams()`     | `array`                   |
+| zf1       | `getQuery()`           | `array`                   |
+
 
 ### `$_POST`
 
@@ -83,7 +94,6 @@ The naming for this superglobal is less consistent than for the other supergloba
 | horde     | `getPostVars()`    | `array`                   | x    |      |        |      |
 | joomla    | `$post`            | _Input_ class             | x    |      | x      |      |
 | klein     | `paramsPost()`     | _PostCollection_ class    | x    |      |        |      |
-| lithium   | `$data`            | `array`                   |      | x    |        |      |
 | mediawiki | `getPostValues()`  | `array`                   | x    |      |        |      |
 | nette     | `getPost()`        | `array`                   | x    |      |        |      |
 | phalcon   | `getPost()`        | `array`                   | x    |      |        |      |
@@ -92,6 +102,7 @@ The naming for this superglobal is less consistent than for the other supergloba
 | tempest   | `$body`            | `array`                   |      |      |        | x    |
 | yaf       | `getPost()`        | `array`                   | x    |      |        |      |
 | yii2      | `getBodyParams()`  | `array|object`            |      |      | x      | x    |
+| zf1       | `getPost()`        | `array`                   | x    |      |        |      |
 
 ### `$_COOKIE`
 
@@ -104,7 +115,6 @@ The naming for this superglobal is less consistent than for the other supergloba
 | horde     | `getCookieVars()`   | `array`                   |
 | joomla    | `$cookie`           | _Cookie_ class            |
 | klein     | `cookies()`         | _CookieCollection_ class  |
-| lithium   | -                   | -                         |
 | mediawiki | `getCookieArray()`  | `array`                   |
 | nette     | `$cookies`          | `array`                   |
 | phalcon   | -                   | -                         |
@@ -113,6 +123,7 @@ The naming for this superglobal is less consistent than for the other supergloba
 | tempest   | `$cookies`          | `array`                   |
 | yaf       | `getCookie()`       | `array`                   |
 | yii2      | `getCookies()`      | _CookieCollection_ class  |
+| zf1       | `getCookie()`       | `array                    |
 
 ### `$_SERVER`
 
@@ -125,7 +136,6 @@ The naming for this superglobal is less consistent than for the other supergloba
 | horde     | `getServerVars()`   | `array`                   |
 | joomla    | `$server`           | _Input_ class             |
 | klein     | `server()`          | _ServerCollection_ class  |
-| lithium   | `env()`             | `array`                   |
 | mediawiki | -                   | -                         |
 | nette     | -                   | -                         |
 | phalcon   | `getServer()`       | `array`                   |
@@ -134,6 +144,7 @@ The naming for this superglobal is less consistent than for the other supergloba
 | tempest   | -                   | -                         |
 | yaf       | `getServer()`       | `array`                   |
 | yii2      | -                   | -                         |
+| zf1       | `getServer()`       | `array`                   |
 
 ### `$_FILES`
 
@@ -148,7 +159,6 @@ Note that some projects retain only the native `$_FILES` structure, while others
 | horde     | `getFileVars()`      | `array`                         | Native       |
 | joomla    | `$files`             | _Files_ class                   | Native       |
 | klein     | `files()`            | _UploadedFileCollection_        | Native       |
-| lithium   | `$data`              | `array`                         | Restructured |
 | mediawiki | `getUpload()`        | _WebRequestUpload_              | Restructured |
 | nette     | `getFiles()`         | _FileUpload_ array              | Restructured |
 | phalcon   | `getUploadedFiles()` | _File_ array                    | Restructured |
@@ -157,6 +167,7 @@ Note that some projects retain only the native `$_FILES` structure, while others
 | tempest   | `files()`            | _Upload_ array                  | Restructured |
 | yaf       | `getFiles()`         | `array`                         | Native       |
 | yii2      | -                    | -                               | -            |
+| zf1       | -                    | -                               | -            |
 
 (1) _CI_Upload_ is unusual, in that it is more of a file-processing object than a file representation object.
 
@@ -173,7 +184,6 @@ Most projects provide access to the incoming request headers, typically extracte
 | horde     | `getHeaders()`     | `array`                   |
 | joomla    | -                  | -                         |
 | klein     | `headers()`        | _HeadersCollection_ class |
-| lithium   | `$headers`         | `array`                   |
 | mediawiki | `getAllHeaders()`  | `array`                   |
 | nette     | `getHeaders()`     | `array`                   |
 | phalcon   | `getHeaders()`     | `array`                   |
@@ -182,10 +192,13 @@ Most projects provide access to the incoming request headers, typically extracte
 | tempest   | `$headers`         | _RequestHeaders_ class    |
 | yaf       | -                  | -                         |
 | yii2      | `getHeaders()`     | _HeaderCollection_ class  |
+| zf1       | `getHeader()` (1)  | `string`                  |
+
+(1) ZF1 only allows retrieval of one header at a time.
 
 ## Method
 
-Most projects make the HTTP method of the incoming request accessible via a property or method.
+The projects make the HTTP method of the incoming request accessible via a property or method.
 
 |           | Access            | Type              |
 | --------- | ----------------- | ----------------- |
@@ -196,7 +209,6 @@ Most projects make the HTTP method of the incoming request accessible via a prop
 | horde     | `getMethod()`     | `string`          |
 | joomla    | `getMethod()`     | `string`          |
 | klein     | `method()`        | `string`          |
-| lithium   | `$method`         | `string`          |
 | mediawiki | `getMethod()`     | `string`          |
 | nette     | `getMethod()`     | `string`          |
 | phalcon   | `getMethod()`     | `string`          |
@@ -205,6 +217,7 @@ Most projects make the HTTP method of the incoming request accessible via a prop
 | tempest   | `getMethod()`     | _Method_ enum     |
 | yaf       | `getMethod()`     | `string`          |
 | yii2      | `getMethod()`     | `string`          |
+| zf1       | `getMethod()`     | `string`          |
 
 ## URI/URL
 
@@ -219,7 +232,6 @@ Most projects provide a representation of the incoming request URI or URL, acces
 | horde     | -   | -   | -                  | -                 |
 | joomla    | -   | -   | -                  | -                 |
 | klein     | x   |     | `uri()`            | `string`          |
-| lithium   |     | x   | `$url`             | `string`          |
 | mediawiki |     | x   | `getRequestURL()`  | `string`          |
 | nette     |     | x   | `getUrl()`         | _UrlScript_ class |
 | phalcon   | x   |     | `getURI()`         | `string`          |
@@ -228,6 +240,7 @@ Most projects provide a representation of the incoming request URI or URL, acces
 | tempest   | x   |     | `$uri`             | `string`          |
 | yaf       | x   |     | `getRequestUri()`  | `string`          |
 | yii2      |     | x   | `getUrl()`         | `string`          |
+| zf1       | x   |     | `getRequestUri()`  | `string`          |
 
 ## Raw Body Content
 
@@ -242,7 +255,6 @@ Most projects provide access to `php://input` via a property or method, though t
 | horde     | -                   | -                       |     |      |         |       |
 | joomla    | -                   | -                       |     |      |         |       |
 | klein     | `body()`            | `string`                |     | x    |         |       |
-| lithium   | -                   | -                       |     |      |         |       |
 | mediawiki | `getRawInput()`     | `string`                | x   |      |         | x     |
 | nette     | `getRawBody()`      | `string|null`           | x   | x    |         |       |
 | phalcon   | `getRawBody()`      | `string`                | x   | x    |         |       |
@@ -251,3 +263,4 @@ Most projects provide access to `php://input` via a property or method, though t
 | tempest   | `$raw`              | `string`                | x   |      |         |       |
 | yaf       | `getRaw()`          | `mixed`                 | x   |      |         |       |
 | yii2      | `getRawBody()`      | `string`                | x   | x    |         |       |
+| zf1       | `getRawBody()`      | `string`                | x   | x    |         |       |

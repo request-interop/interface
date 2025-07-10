@@ -1,6 +1,6 @@
 # Request-Interop Standard Interface Package
 
-This package provides a standard set of interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects and refines the common practices of over a dozen different userland projects.
+This package provides a standard set of interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects, refines, and reconciles the common practices identified within [several pre-existing projects][README-RESEARCH.md].
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
@@ -63,13 +63,11 @@ Notes:
 
 - **There is no requirement to keep `$query` and `$uri->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
 
-- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].**
+- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].** Although most of the researched projects use a `string` proper for the raw body content, some use a resource. A [_StringableString_][] allows for treating the content as a either a string or a resource stream.
 
-- **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].**
+- **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].** This takes the place of a `$_FILES` superglobal equivalent.
 
-- **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].**
-
-- TODO: only $uploads, not $files. $uri SHOULD have scheme and host. (Does that make it a $url instead?)
+- **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].** Although most of the researched projects use a `string` proper for the request URI, some use an object. A [_UriStruct_][] allows for treating the URI as either an object or a string.
 
 ### _RequestStructFactory_
 
@@ -116,8 +114,6 @@ The _RequestTypeAliases_ interface provides these custom PHPStan types to aid st
 
 Notes:
 
-- **The `method_string` is not a _Method_ interface.** Usually the reason for a _Method_ interface is to define `is(string $method) : bool` to make sure the comparison values use matching cases. However, the custom `method_string` type is `uppercase-string`, which means static analysis should catch mismatched casing.
-
 - **The `query_array` type allows only `string`, while `body_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `body_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
 - **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
@@ -139,10 +135,6 @@ Notes:
 
 ## Q & A
 
-### What userland projects were used as reference points for Request-Interop?
-
-The pre-PSR-7 versions of Aura, Cake, Code Igniter, Horde, Joomla, Klein, Lithium, MediaWiki, Nette, Phalcon, Symfony, Yaf, Yii, and Zend. See this [project comparison][] for more information.
-
 ### How is Request-Interop different from PSR-7 _ServerRequestInterface_?
 
 In short:
@@ -155,7 +147,7 @@ A longer answer is at [README-PSR-7.md][].
 
 ### How is Request-Interop different from the [Server-Side Request and Response Objects RFC](https://wiki.php.net/rfc/response)?
 
-This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URL, and the uploads properties remain.
+This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URI, and the uploads properties remain.
 
 * * *
 
@@ -171,8 +163,8 @@ This package is an intellectual descendant of that RFC, similar in form but much
 [`uploads_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
-[project comparison]: https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJkXVdAg-OMEfkgna7-b2IsuoWN8x_TazxEYn-yVDF2XQIqnzmHqdDO3KEKx/pubhtml
 [README-PSR-7.md]: ./README-PSR-7.md
+[README-RESEARCH.md]: ./README-RESEARCH.md
 [RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
 [RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
 [Stream-Interop]: https://github.com/stream-interop/interface

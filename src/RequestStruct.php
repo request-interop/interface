@@ -12,7 +12,7 @@ use UriInterop\Interface\UriStruct;
  *
  * @phpstan-import-type headers_array from RequestTypeAliases
  *
- * @phpstan-import-type input_array from RequestTypeAliases
+ * @phpstan-import-type body_array from RequestTypeAliases
  *
  * @phpstan-import-type method_string from RequestTypeAliases
  *
@@ -24,7 +24,7 @@ use UriInterop\Interface\UriStruct;
  */
 interface RequestStruct
 {
-    public StringableStream $body { get; }
+    public StringableStream $input { get; }
 
     /** @var cookies_array */
     public array $cookies { get; }
@@ -32,8 +32,8 @@ interface RequestStruct
     /** @var headers_array */
     public array $headers { get; }
 
-    /** @var input_array */
-    public array $input { get; }
+    /** @var body_array */
+    public array $body { get; }
 
     /** @var method_string */
     public string $method { get; }

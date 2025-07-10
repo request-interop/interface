@@ -19,9 +19,10 @@ Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPSt
 
 The [_RequestStruct_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
 
-- `StringableStream $body { get; }`
-    - Corresponds to the raw request content.
-    - The encapsulated resource SHOULD be `php://input`.
+- `body_array $body { get; }`
+    - Corresponds to an array of the request body values.
+    - The values SHOULD be a copy of the `$_POST` superglobal array or its equivalent.
+    - The values MAY be derived from a parsed or decoded representation of the request body.
 
 - `cookies_array $cookies { get; }`
     - Corresponds to a copy of the `$_COOKIES` superglobal array or its equivalent.
@@ -31,10 +32,9 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals (or 
     - The values SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
     - Each array key MUST be the header field name in lower-kebab-case.
 
-- `input_array $input { get; }`
-    - Corresponds to an array of the request body values.
-    - The values SHOULD be a copy of the `$_POST` superglobal array or its equivalent.
-    - The values MAY be derived from a parsed or decoded representation of the request body.
+- `StringableStream $input { get; }`
+    - Corresponds to the raw request content.
+    - The encapsulated resource SHOULD be `php://input`.
 
 - `method_string $method { get; }`
     - Corresponds to the request method.
@@ -63,7 +63,7 @@ Notes:
 
 - **There is no requirement to keep `$query` and `$uri->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
 
-- **The `$body` property is a [Stream-Interop][] [_StringableStream_][].**
+- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].**
 
 - **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].**
 
@@ -78,10 +78,10 @@ The [_RequestStructFactory_][] interface affords creating a [_RequestStruct_][] 
 -
     ```php
     public function newRequest(
-        ?StringableStream $body = null,
+        ?body_array $body = null,
         ?cookies_array $cookies = null,
         ?headers_array $headers = null,
-        ?input_array $input = null,
+        ?StringableStream $input = null,
         ?method_string $method = null,
         ?query_array $query = null,
         ?server_array $server = null,
@@ -106,7 +106,7 @@ The _RequestTypeAliases_ interface provides these custom PHPStan types to aid st
 
 - `headers_array`: `array<lowercase-string, string>`
 
-- `input_array`: `array<array-key, null|scalar|input_array>` recursively up to 16 dimensions.
+- `body_array`: `array<array-key, null|scalar|body_array>` recursively up to 16 dimensions.
 
 - `method_string`: `uppercase-string`
 
@@ -118,11 +118,11 @@ Notes:
 
 - **The `method_string` is not a _Method_ interface.** Usually the reason for a _Method_ interface is to define `is(string $method) : bool` to make sure the comparison values use matching cases. However, the custom `method_string` type is `uppercase-string`, which means static analysis should catch mismatched casing.
 
-- **The `query_array` type allows only `string`, while `input_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `input_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
+- **The `query_array` type allows only `string`, while `body_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `body_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
 - **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
 
-- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `input_array` and `query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
+- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `body_array` and `query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
 
 
 ## Implementations

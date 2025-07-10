@@ -8,11 +8,11 @@ use UploadInterop\Interface\UploadTypeAliases;
 use UriInterop\Interface\UriStruct;
 
 /**
+ * @phpstan-import-type body_array from RequestTypeAliases
+ *
  * @phpstan-import-type cookies_array from RequestTypeAliases
  *
  * @phpstan-import-type headers_array from RequestTypeAliases
- *
- * @phpstan-import-type input_array from RequestTypeAliases
  *
  * @phpstan-import-type method_string from RequestTypeAliases
  *
@@ -27,17 +27,17 @@ interface RequestStructFactory
     /**
      * @param ?cookies_array $cookies
      * @param ?headers_array $headers
-     * @param ?input_array $input
+     * @param ?body_array $body
      * @param ?method_string $method
      * @param ?query_array $query
      * @param ?server_array $server
      * @param ?uploads_array $uploads
      */
     public function newRequest(
-        ?StringableStream $body = null,
+        ?array $body = null,
         ?array $cookies = null,
         ?array $headers = null,
-        ?array $input = null,
+        ?StringableStream $input = null,
         ?string $method = null,
         ?array $query = null,
         ?array $server = null,

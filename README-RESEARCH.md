@@ -55,6 +55,38 @@ The projects offer varying levels of nominal mutability. Note that "readonly" he
 
 None of the researched projects advertise immutablity.
 
+## Creating from superglobals
+
+The projects offer varying levels of support for creating request objects from PHP superglobals. Some projects provide factory methods or constructors that accept superglobal arrays, while others require manual extraction of data from the superglobals.
+
+|           | Dedicated Factory | Factory Method | Internal | Manual |
+| --------- | ----------------- | ---------------| -------- | ------ |
+| aura      | x                 |                |          |        |
+| cake2     |                   |                | x        |        |
+| ci3       |                   |                | x        |        |
+| flight    |                   |                | x        |        |
+| horde     |                   |                | x        |        |
+| joomla    |                   |                |          | x      |
+| klein     |                   | x              |          |        |
+| mediawiki |                   |                | x        |        |
+| nette     | x                 |                |          |        |
+| phalcon   |                   |                | x        |        |
+| slim2     |                   |                | x        |        |
+| symfony   |                   | x              |          |        |
+| tempest   | x                 |                |          |        |
+| yaf       |                   |                | x        |        |
+| yii2      |                   |                | x        |        |
+| zf1       |                   |                | x        |        |
+
+* "Internal" means the superglobal values are extracted within the request object itself, typically in the constructor. For comparison purposes, this is equivalent to having a factory method to create from globals.
+* In none of the dedicated factory or factory method implementations do the researchers see an explicit parameter for accepting superglobal arrays; rather, the implementations appear to extract the superglobal values internally.
+* In all cases the superglobals were never modified directly; rather, values were extracted from them to populate the request object.
+
+Although the "Internal" pattern is more widespread, it strongly couples the request object to PHP's superglobals, making testing, configuration, and decoupling more difficult. The researchers therefore consider the "Dedicated Factory" and "Factory Method" patterns to be superior.
+
+Instead, we recommend providing a dedicated `createFromGlobals()` method on a separate `RequestStructFactory` interface, in contrast to having the request object have a factory method or constructor that extracts from the superglobals internally. This approach better separates concerns, allowing the request object to focus on representing the request data, while the factory handles the extraction from superglobals. This also facilitates easier testing and decoupling from PHP's global state.
+
+
 ## Superglobals
 
 The projects provide access to the most or all of the following superglobals via a property or method.

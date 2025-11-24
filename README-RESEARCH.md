@@ -3,8 +3,8 @@
 Request-Interop is based on research including the following projects, which model their request objects on the PHP superglobals:
 
 - [aura/web](https://github.com/auraphp/Aura.Web/blob/2.x/src/Request.php) (aura)
-- Cake 2 _CakeRequest_ (cake2)
-- Code Igniter 3 _CI_Input_ (ci3)
+- [Cake 2 _CakeRequest_](https://github.com/pieceofcake2/cakephp) (cake2)
+- [Code Igniter 3 _CI_Input_](https://github.com/bcit-ci/CodeIgniter/blob/3.1-stable/system/core/Input.php) (ci3)
 - [flightphp/core](https://github.com/flightphp/core/blob/master/flight/net/Request.php) (flight)
 - [horde/controller](https://github.com/horde/Controller/blob/horde_controller2/lib/Horde/Controller/Request/Http.php) (horde)
 - [joomla/input](https://github.com/joomla-framework/input/blob/3.x-dev/src/Input.php) (joomla)

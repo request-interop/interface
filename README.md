@@ -75,24 +75,12 @@ Notes:
 
 The [_RequestStructFactory_][] interface affords creating a [_RequestStruct_][] instance:
 
--
-    ```php
-    public function newRequest(
-        ?request_body_array $body = null,
-        ?request_cookies_array $cookies = null,
-        ?request_headers_array $headers = null,
-        ?StringableStream $input = null,
-        ?request_method_string $method = null,
-        ?request_query_array $query = null,
-        ?request_server_array $server = null,
-        ?uploads_array $uploads = null,
-        ?UriStruct $uri = null,
-    ) : RequestStruct;
-    ```
+- ```php
+    public function newRequest() : RequestStruct;
+  ```
 
-Notes:
-
-- **All `newRequest()` arguments are optional.** The arguments are intended to override whatever defaults the implementation may provide; i.e., providing no arguments SHOULD return the implementation's default [_RequestStruct_][], such as one created from the superglobals.
+Implementations SHOULD create the new _RequestStruct_ from the superglobals of
+the current request, but MAY use some other data source.
 
 ### _RequestThrowable_
 
@@ -165,6 +153,22 @@ A longer answer is at [README-PSR-7.md][].
 ### How is Request-Interop different from the [Server-Side Request and Response Objects RFC](https://wiki.php.net/rfc/response)?
 
 This package is an intellectual descendant of that RFC, similar in form but much reduced in scope: only the superglobal-equivalent arrays, the method string, the URI, and the uploads properties remain.
+
+### Why is there a separate _RequestStructFactory_ ?
+
+Of the 16 researched projects, only 3 provide a separate factory class. The
+remainder provide eithe r a static factory method on the request object itself,
+or use only `new` for creating a request object.
+
+However, the Response-Interop request interface is presented as a struct,
+meaning it can have no methods, only property.
+
+As such, even though the use of a factory class is decidedly the minority
+positions, Response-Interop opines that it is the more suitable choice.
+
+Further, Response-Interop opines that a separate factory interface better
+separates the concerns of "creation" and "building" of the _RequestStruct_ from
+the superglobals and related environment elements.
 
 * * *
 

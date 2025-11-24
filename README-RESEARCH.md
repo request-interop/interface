@@ -55,39 +55,6 @@ The projects offer varying levels of nominal mutability. Note that "readonly" he
 
 None of the researched projects advertise immutablity.
 
-## Creating from superglobals
-
-The projects offer varying levels of support for creating request objects from PHP superglobals. Some projects provide factory methods or constructors that accept superglobal arrays, while others require manual extraction of data from the superglobals.
-
-|           | Dedicated Factory | Factory Method | Internal | Manual |
-| --------- | ----------------- | ---------------| -------- | ------ |
-| aura      | `public function WebFactory::newRequestGlobals(): Request\Globals` |  |  |  |
-| cake2     |  |  | `public function __construct(?string $url = null, bool $parseEnvironment = true)` |  |
-| ci3       |  |  | `public function __construct()` |  |
-| flight    |  |  | `public function __construct(array $config = [])` |  |
-| horde     |  |  | ^ |  |
-| joomla    |  |  |  | `public function __construct(?array $source = $_REQUEST, array $options = [])` |
-| klein     |  | `public static function createFromGlobals(): Request` |  |  |
-| mediawiki |  |  | `public function __construct()` |  |
-| nette     | `public function RequestFactory::fromGlobals(): Request` |  |  |  |`
-| phalcon   |  |  | ^ |  |
-| slim2     |  |  | `public function __construct(\Slim\Environment $env)`^^ |  |
-| symfony   |  | `public static function createFromGlobals(): static` |  |  |
-| tempest   | `public function RequestFactory::make(): PsrRequest` |  |  |  |
-| yaf       |  |  | `public function __construct(?string $request_uri = null, ?string $base_uri = null)` |  |
-| yii2      |  |  | ^ |  |
-| zf1       |  |  | `public function __construct(string\|Zend_Uri\|null $uri = null)` |  |
-
-* "Internal" means the superglobal values are used directly within the class. For comparison purposes, this is equivalent to having a dedicated factory method to create from globals.
-* In none of the dedicated factory or factory method implementations do the researchers see an explicit parameter for accepting superglobal arrays; rather, in most cases, implementations appear to extract the superglobal values internally.
-* In all cases the superglobals were never modified directly; rather, values were extracted from them to populate the request object.
-* ^The class does not have a constructor. Methods use the superglobals directly.
-* ^^Slim 2's `Environment` class is a singleton wrapper around `$_SERVER`. You can provide your own `$_SERVER` values to the `Environment` constructor, but not other superglobals.
-
-Although the "Internal" pattern is more widespread, it strongly couples the request object to PHP's superglobals, making testing, configuration, and decoupling more difficult. The researchers therefore consider the "Dedicated Factory" and "Factory Method" patterns to be a superior approach to creating a request from PHP's superglobals.
-
-Instead, we recommend providing a dedicated `createFromGlobals()` method on a separate `RequestStructFactory` interface, in contrast to having the request object have a factory method or constructor that extracts from the superglobals internally. This approach better separates concerns, allowing the request object to focus on representing the request data, while the factory handles the extraction from superglobals. This also facilitates easier testing and decoupling from PHP's global state.
-
 ## Superglobals
 
 The projects provide access to the most or all of the following superglobals via a property or method.
@@ -297,3 +264,90 @@ Most projects provide access to `php://input` via a property or method, though t
 | yaf       | `getRaw()`          | `mixed`                 | x   |      |         |       |
 | yii2      | `getRawBody()`      | `string`                | x   | x    |         |       |
 | zf1       | `getRawBody()`      | `string`                | x   | x    |         |       |
+
+
+### Factories
+
+The projects offer varying levels of support for creating request objects from
+the PHP superglobals. Some projects provide factory methods or constructors that
+accept superglobal arrays, while others require only instantiation via the `new`
+keyword.
+
+- "Factory Class" indicates a separate factory class for creating the request object.
+- "Factory Method" indicates a method on the creation method on request object itself.
+
+|           | Factory Class | Factory Method | `new` |
+| --------- | ------------- | -------------- | ----- |
+| aura      | x             |                |       |
+| cake2     |               |                | x     |
+| ci3       |               |                | x     |
+| flight    |               |                | x     |
+| horde     |               |                | x     |
+| joomla    |               |                | x     |
+| klein     |               | x              |       |
+| mediawiki |               |                | x     |
+| nette     | x             |                |       |
+| phalcon   |               |                | x     |
+| slim2     |               |                | x     |
+| symfony   |               | x              |       |
+| tempest   | x             |                |       |
+| yaf       |               |                | x     |
+| yii2      |               |                | x     |
+| zf1       |               |                | x     |
+
+Signatures are as follows:
+
+|           | Creation Signature                                                                   |
+| --------- | ------------------------------------------------------------------------------------ |
+| aura      | `public function WebFactory::newRequestGlobals(): Request\Globals`                   |
+| cake2     | `public function __construct(?string $url = null, bool $parseEnvironment = true)`    |
+| ci3       | `public function __construct()`                                                      |
+| flight    | `public function __construct(array $config = [])`                                    |
+| horde     | -                                                                                    |
+| joomla    | `public function __construct(?array $source = $_REQUEST, array $options = [])`       |
+| klein     | `public static function createFromGlobals(): Request`                                |
+| mediawiki | `public function __construct()`                                                      |
+| nette     | `public function RequestFactory::fromGlobals(): Request`                             |
+| phalcon   | -                                                                                    |
+| slim2     | `public function __construct(\Slim\Environment $env)`                                |
+| symfony   | `public static function createFromGlobals(): static`                                 |
+| tempest   | `public function RequestFactory::make(): PsrRequest`                                 |
+| yaf       | `public function __construct(?string $uri = null, ?string $base_uri = null)` |
+| yii2      | -                                                                                    |
+| zf1       | `public function __construct(string\|Zend_Uri\|null $uri = null)`                    |
+
+## Superglobal Coupling
+
+Coupling of request objects to the superglobal variables is varied across the
+researched projects.
+
+- "Injected" indicates the superglobals (or the request property values
+  themselves) are passed as arguments into the creation mechanism from the
+  outside. The request object is decoupled from the superglobals; changes to one
+  do not affect the other.
+
+- "Located" indicates the creation mechanism copies the superglobals itself from
+  the inside. The request object is decoupled from the superglobals; changes to
+  one do not affect the other.
+
+- "Coupled" indicates the request object uses the superglobals themselves;
+  changes to the superglobals are reflected inside the requested object.
+
+|           | Injected | Located | Coupled |
+| --------- | -------- | ------- | ------- |
+| aura      | x        |         |         |
+| cake2     |          | x       |         |
+| ci3       |          |         | x       |
+| flight    |          | x       |         |
+| horde     |          |         | x       |
+| joomla    |          | x       |         |
+| klein     |          | x       |         |
+| mediawiki |          | x       |         |
+| nette     | x        |         |         |
+| phalcon   |          |         | x       |
+| slim2     |          | x       |         |
+| symfony   |          | x       |         |
+| tempest   | x        |         |         |
+| yaf       |          | x       |         |
+| yii2      |          |         | x       |
+| zf1       |          |         | x       |

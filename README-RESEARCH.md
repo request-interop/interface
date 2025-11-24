@@ -3,8 +3,8 @@
 Request-Interop is based on research including the following projects, which model their request objects on the PHP superglobals:
 
 - [aura/web](https://github.com/auraphp/Aura.Web/blob/2.x/src/Request.php) (aura)
-- Cake 2 _CakeRequest_ (cake2)
-- Code Igniter 3 _CI_Input_ (ci3)
+- [Cake 2 _CakeRequest_](https://github.com/pieceofcake2/cakephp) (cake2)
+- [Code Igniter 3 _CI_Input_](https://github.com/bcit-ci/CodeIgniter/blob/3.1-stable/system/core/Input.php) (ci3)
 - [flightphp/core](https://github.com/flightphp/core/blob/master/flight/net/Request.php) (flight)
 - [horde/controller](https://github.com/horde/Controller/blob/horde_controller2/lib/Horde/Controller/Request/Http.php) (horde)
 - [joomla/input](https://github.com/joomla-framework/input/blob/3.x-dev/src/Input.php) (joomla)
@@ -54,6 +54,40 @@ The projects offer varying levels of nominal mutability. Note that "readonly" he
 
 
 None of the researched projects advertise immutablity.
+
+## Creating from superglobals
+
+The projects offer varying levels of support for creating request objects from PHP superglobals. Some projects provide factory methods or constructors that accept superglobal arrays, while others require manual extraction of data from the superglobals.
+
+|           | Dedicated Factory | Factory Method | Internal | Manual |
+| --------- | ----------------- | ---------------| -------- | ------ |
+| aura      | `public function WebFactory::newRequestGlobals(): Request\Globals` |  |  |  |
+| cake2     |  |  | `public function __construct(?string $url = null, bool $parseEnvironment = true)` |  |
+| ci3       |  |  | `public function __construct()` |  |
+| flight    |  |  | `public function __construct(array $config = [])` |  |
+| horde     |  |  | ^ |  |
+| joomla    |  |  |  | `public function __construct(?array $source = $_REQUEST, array $options = [])` |
+| klein     |  | `public static function createFromGlobals(): Request` |  |  |
+| mediawiki |  |  | `public function __construct()` |  |
+| nette     | `public function RequestFactory::fromGlobals(): Request` |  |  |  |`
+| phalcon   |  |  | ^ |  |
+| slim2     |  |  | `public function __construct(\Slim\Environment $env)`^^ |  |
+| symfony   |  | `public static function createFromGlobals(): static` |  |  |
+| tempest   | `public function RequestFactory::make(): PsrRequest` |  |  |  |
+| yaf       |  |  | `public function __construct(?string $request_uri = null, ?string $base_uri = null)` |  |
+| yii2      |  |  | ^ |  |
+| zf1       |  |  | `public function __construct(string\|Zend_Uri\|null $uri = null)` |  |
+
+* "Internal" means the superglobal values are used directly within the class. For comparison purposes, this is equivalent to having a dedicated factory method to create from globals.
+* In none of the dedicated factory or factory method implementations do the researchers see an explicit parameter for accepting superglobal arrays; rather, in most cases, implementations appear to extract the superglobal values internally.
+* In all cases the superglobals were never modified directly; rather, values were extracted from them to populate the request object.
+* ^The class does not have a constructor. Methods use the superglobals directly.
+* ^^Slim 2's `Environment` class is a singleton wrapper around `$_SERVER`. You can provide your own `$_SERVER` values to the `Environment` constructor, but not other superglobals.
+
+Although the "Internal" pattern is more widespread, it strongly couples the request object to PHP's superglobals, making testing, configuration, and decoupling more difficult. The researchers therefore consider the "Dedicated Factory" and "Factory Method" patterns to be a superior approach to creating a request from PHP's superglobals.
+
+Instead, we recommend providing a dedicated `createFromGlobals()` method on a separate `RequestStructFactory` interface, in contrast to having the request object have a factory method or constructor that extracts from the superglobals internally. This approach better separates concerns, allowing the request object to focus on representing the request data, while the factory handles the extraction from superglobals. This also facilitates easier testing and decoupling from PHP's global state.
+
 
 ## Superglobals
 

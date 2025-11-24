@@ -157,18 +157,18 @@ This package is an intellectual descendant of that RFC, similar in form but much
 ### Why is there a separate _RequestStructFactory_ ?
 
 Of the 16 researched projects, only 3 provide a separate factory class. The
-remainder provide eithe r a static factory method on the request object itself,
+remainder provide either a static factory method on the request object itself,
 or use only `new` for creating a request object.
 
-However, the Response-Interop request interface is presented as a struct,
-meaning it can have no methods, only property.
+However, the Response-Interop request interface is modeled as a struct, meaning
+it can have no methods, only properties.
 
 As such, even though the use of a factory class is decidedly the minority
-positions, Response-Interop opines that it is the more suitable choice.
+position, Response-Interop asserts that it is the more suitable choice here.
 
 Further, Response-Interop opines that a separate factory interface better
-separates the concerns of "creation" and "building" of the _RequestStruct_ from
-the superglobals and related environment elements.
+separates the concern of creating or building the _RequestStruct_ using the
+superglobals and related environment elements.
 
 * * *
 

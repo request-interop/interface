@@ -8,17 +8,17 @@ use UploadInterop\Interface\UploadTypeAliases;
 use UriInterop\Interface\UriStruct;
 
 /**
- * @phpstan-import-type cookies_array from RequestTypeAliases
+ * @phpstan-import-type request_cookies_array from RequestTypeAliases
  *
- * @phpstan-import-type headers_array from RequestTypeAliases
+ * @phpstan-import-type request_headers_array from RequestTypeAliases
  *
- * @phpstan-import-type body_array from RequestTypeAliases
+ * @phpstan-import-type request_body_array from RequestTypeAliases
  *
- * @phpstan-import-type method_string from RequestTypeAliases
+ * @phpstan-import-type request_method_string from RequestTypeAliases
  *
- * @phpstan-import-type query_array from RequestTypeAliases
+ * @phpstan-import-type request_query_array from RequestTypeAliases
  *
- * @phpstan-import-type server_array from RequestTypeAliases
+ * @phpstan-import-type request_server_array from RequestTypeAliases
  *
  * @phpstan-import-type uploads_array from UploadTypeAliases
  */
@@ -26,22 +26,22 @@ interface RequestStruct
 {
     public StringableStream $input { get; }
 
-    /** @var cookies_array */
+    /** @var request_cookies_array */
     public array $cookies { get; }
 
-    /** @var headers_array */
+    /** @var request_headers_array */
     public array $headers { get; }
 
-    /** @var body_array */
+    /** @var request_body_array */
     public array $body { get; }
 
-    /** @var method_string */
+    /** @var request_method_string */
     public string $method { get; }
 
-    /** @var query_array */
+    /** @var request_query_array */
     public array $query { get; }
 
-    /** @var server_array */
+    /** @var request_server_array */
     public array $server { get; }
 
     /** @var uploads_array */

@@ -19,16 +19,16 @@ Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPSt
 
 The [_RequestStruct_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
 
-- `body_array $body { get; }`
+- `request_body_array $body { get; }`
     - Corresponds to an array of the request body values.
     - Implementations SHOULD populate the property value from a copy of the `$_POST` superglobal array or its equivalent.
     - Implementations MAY derive the property value from a parsed or decoded representation of the request body.
 
-- `cookies_array $cookies { get; }`
+- `request_cookies_array $cookies { get; }`
     - Corresponds to an array of the request cookie values.
     - Implementations SHOULD populate the property value from a copy of the `$_COOKIE` superglobal array or its equivalent.
 
-- `headers_array $headers { get; }`
+- `request_headers_array $headers { get; }`
     - Corresponds to an array of the request headers.
     - Implementations SHOULD derive the property value from the `$_SERVER` superglobal array or its equivalent.
     - Each array key MUST be the header field name in lower-kebab-case.
@@ -37,15 +37,15 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals (or 
     - Corresponds to the raw request content.
     - Implementations SHOULD use `php://input` as the encapsulated resource.
 
-- `method_string $method { get; }`
+- `request_method_string $method { get; }`
     - Corresponds to the request method.
     - Implentations SHOULD derive the property value from the `$_SERVER['REQUEST_METHOD']` superglobal value or its equivalent.
 
-- `query_array $query { get; }`
+- `request_query_array $query { get; }`
     - Corresponds to an array of the request query values.
     - Implementations SHOULD populate the property value from a copy of the `$_GET` superglobal array or its equivalent.
 
-- `server_array $server { get; }`
+- `request_server_array $server { get; }`
     - Corresponds to an array of server and execution environment values.
     - Implementations SHOULD populate the property value from a copy of the `$_SERVER` superglobal array or its equivalent.
 
@@ -78,13 +78,13 @@ The [_RequestStructFactory_][] interface affords creating a [_RequestStruct_][] 
 -
     ```php
     public function newRequest(
-        ?body_array $body = null,
-        ?cookies_array $cookies = null,
-        ?headers_array $headers = null,
+        ?request_body_array $body = null,
+        ?request_cookies_array $cookies = null,
+        ?request_headers_array $headers = null,
         ?StringableStream $input = null,
-        ?method_string $method = null,
-        ?query_array $query = null,
-        ?server_array $server = null,
+        ?request_method_string $method = null,
+        ?request_query_array $query = null,
+        ?request_server_array $server = null,
         ?uploads_array $uploads = null,
         ?UriStruct $uri = null,
     ) : RequestStruct;
@@ -102,25 +102,25 @@ The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an [_Except
 
 The _RequestTypeAliases_ interface provides these custom PHPStan types to aid static analysis:
 
-- `cookies_array`: `array<string, string>`
+- `request_cookies_array`: `array<string, string>`
 
-- `headers_array`: `array<lowercase-string, string>`
+- `request_headers_array`: `array<lowercase-string, string>`
 
-- `body_array`: `array<array-key, null|scalar|body_array>` recursively up to 16 dimensions.
+- `request_body_array`: `array<array-key, null|scalar|request_body_array>` recursively up to 16 dimensions.
 
-- `method_string`: `uppercase-string`
+- `request_method_string`: `uppercase-string`
 
-- `query_array`: `array<array-key, string|query_array>` recursively up to 16 dimensions.
+- `request_query_array`: `array<array-key, string|request_query_array>` recursively up to 16 dimensions.
 
-- `server_array`: `array<string, string>`
+- `request_server_array`: `array<string, string>`
 
 Notes:
 
-- **The `query_array` type allows only `string`, while `body_array` allows any `scalar`.** The `query_array` values correspond to `$_GET`, which is composed only of strings. However, `body_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
+- **The `request_query_array` type allows only `string`, while `request_body_array` allows any `scalar`.** The `request_query_array` values correspond to `$_GET`, which is composed only of strings. However, `request_body_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
 
-- **The `server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
+- **The `request_server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
 
-- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `body_array` and `query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
+- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `request_body_array` and `request_query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
 
 
 ## Implementations

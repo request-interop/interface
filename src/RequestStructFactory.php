@@ -8,29 +8,29 @@ use UploadInterop\Interface\UploadTypeAliases;
 use UriInterop\Interface\UriStruct;
 
 /**
- * @phpstan-import-type body_array from RequestTypeAliases
+ * @phpstan-import-type request_body_array from RequestTypeAliases
  *
- * @phpstan-import-type cookies_array from RequestTypeAliases
+ * @phpstan-import-type request_cookies_array from RequestTypeAliases
  *
- * @phpstan-import-type headers_array from RequestTypeAliases
+ * @phpstan-import-type request_headers_array from RequestTypeAliases
  *
- * @phpstan-import-type method_string from RequestTypeAliases
+ * @phpstan-import-type request_method_string from RequestTypeAliases
  *
- * @phpstan-import-type query_array from RequestTypeAliases
+ * @phpstan-import-type request_query_array from RequestTypeAliases
  *
- * @phpstan-import-type server_array from RequestTypeAliases
+ * @phpstan-import-type request_server_array from RequestTypeAliases
  *
  * @phpstan-import-type uploads_array from UploadTypeAliases
  */
 interface RequestStructFactory
 {
     /**
-     * @param ?cookies_array $cookies
-     * @param ?headers_array $headers
-     * @param ?body_array $body
-     * @param ?method_string $method
-     * @param ?query_array $query
-     * @param ?server_array $server
+     * @param ?request_cookies_array $cookies
+     * @param ?request_headers_array $headers
+     * @param ?request_body_array $body
+     * @param ?request_method_string $method
+     * @param ?request_query_array $query
+     * @param ?request_server_array $server
      * @param ?uploads_array $uploads
      */
     public function newRequest(

@@ -21,49 +21,51 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals (or 
 
 - `body_array $body { get; }`
     - Corresponds to an array of the request body values.
-    - The values SHOULD be a copy of the `$_POST` superglobal array or its equivalent.
-    - The values MAY be derived from a parsed or decoded representation of the request body.
+    - Implementations SHOULD populate the property value from a copy of the `$_POST` superglobal array or its equivalent.
+    - Implementations MAY derive the property value from a parsed or decoded representation of the request body.
 
 - `cookies_array $cookies { get; }`
-    - Corresponds to a copy of the `$_COOKIES` superglobal array or its equivalent.
+    - Corresponds to an array of the request cookie values.
+    - Implementations SHOULD populate the property value from a copy of the `$_COOKIE` superglobal array or its equivalent.
 
 - `headers_array $headers { get; }`
     - Corresponds to an array of the request headers.
-    - The values SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
+    - Implementations SHOULD derive the property value from the `$_SERVER` superglobal array or its equivalent.
     - Each array key MUST be the header field name in lower-kebab-case.
 
 - `StringableStream $input { get; }`
     - Corresponds to the raw request content.
-    - The encapsulated resource SHOULD be `php://input`.
+    - Implementations SHOULD use `php://input` as the encapsulated resource.
 
 - `method_string $method { get; }`
     - Corresponds to the request method.
-    - The value SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
+    - Implentations SHOULD derive the property value from the `$_SERVER['REQUEST_METHOD']` superglobal value or its equivalent.
 
 - `query_array $query { get; }`
     - Corresponds to an array of the request query values.
-    - The values SHOULD be a copy of the `$_GET` superglobal array or its equivalent.
+    - Implementations SHOULD populate the property value from a copy of the `$_GET` superglobal array or its equivalent.
 
 - `server_array $server { get; }`
-    - Corresponds to a copy of the `$_SERVER` superglobal array or its equivalent.
+    - Corresponds to an array of server and execution environment values.
+    - Implementations SHOULD populate the property value from a copy of the `$_SERVER` superglobal array or its equivalent.
 
 - `uploads_array $uploads { get; }`
     - An array of [_UploadStruct_][] instances.
-    - The values SHOULD be derived from the `$_FILES` superglobal array or its equivalent.
+    - Implementations SHOULD derive the property value from the `$_FILES` superglobal array or its equivalent.
 
 - `UriStruct $uri { get; }`
     - Corresponds to the requested URI.
-    - The values SHOULD be derived from the `$_SERVER` superglobal array or its equivalent.
+    - Implementations SHOULD derive the property value from the `$_SERVER` superglobal array or its equivalent.
 
 Notes:
 
 - **The interface defines readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
 
-- **The interfaces defines property hooks for `get` but not `set`.** The interface only guarantees readability; writability is outside the scope of this package.
+- **The interface defines property hooks for `get` but not `set`.** The interface only guarantees readability; writability is outside the scope of this package.
 
 - **There is no requirement to keep `$query` and `$uri->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
 
-- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].** Although most of the researched projects use a `string` proper for the raw body content, some use a resource. A [_StringableString_][] allows for treating the content as a either a string or a resource stream.
+- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].** Although most of the researched projects use a `string` proper for the raw body content, some use a resource. A [_StringableStream_][] allows for treating the content as a either a string or a resource stream.
 
 - **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].** This takes the place of a `$_FILES` superglobal equivalent.
 
@@ -134,6 +136,21 @@ Notes:
 - **Reference implementations** may be found at <https://github.com/request-interop/impl>.
 
 ## Q & A
+
+### Why is _RequestStruct_ not identical to a client-side request interface?
+
+None of the researched projects model their request objects that way.
+
+A more general answer is from Fowler in _Patterns of Enterprise Application Architecture_
+(2003, p 21):
+
+> ... I think there is a good distinction to be made between an interface that
+> you provide as a service to others and your use of someone else's service.
+> ... I find it beneficial to think about these differently because the
+> difference in clients alters the way you think about the service.
+
+Request-Interop attempts to model an interface that *uses* a request received
+from an external source, not one that *provides* a request for sending.
 
 ### How is Request-Interop different from PSR-7 _ServerRequestInterface_?
 

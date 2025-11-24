@@ -3,7 +3,7 @@
 Request-Interop is based on research including the following projects, which model their request objects on the PHP superglobals:
 
 - [aura/web](https://github.com/auraphp/Aura.Web/blob/2.x/src/Request.php) (aura)
-- [Cake 2 _CakeRequest_](https://github.com/pieceofcake2/cakephp) (cake2)
+- [Cake 2 _CakeRequest_](https://github.com/pieceofcake2/cakephp/blob/2.x/src/Network/CakeRequest.php) (cake2)
 - [Code Igniter 3 _CI_Input_](https://github.com/bcit-ci/CodeIgniter/blob/3.1-stable/system/core/Input.php) (ci3)
 - [flightphp/core](https://github.com/flightphp/core/blob/master/flight/net/Request.php) (flight)
 - [horde/controller](https://github.com/horde/Controller/blob/horde_controller2/lib/Horde/Controller/Request/Http.php) (horde)
@@ -87,7 +87,6 @@ The projects offer varying levels of support for creating request objects from P
 Although the "Internal" pattern is more widespread, it strongly couples the request object to PHP's superglobals, making testing, configuration, and decoupling more difficult. The researchers therefore consider the "Dedicated Factory" and "Factory Method" patterns to be a superior approach to creating a request from PHP's superglobals.
 
 Instead, we recommend providing a dedicated `createFromGlobals()` method on a separate `RequestStructFactory` interface, in contrast to having the request object have a factory method or constructor that extracts from the superglobals internally. This approach better separates concerns, allowing the request object to focus on representing the request data, while the factory handles the extraction from superglobals. This also facilitates easier testing and decoupling from PHP's global state.
-
 
 ## Superglobals
 

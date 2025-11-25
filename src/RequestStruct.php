@@ -20,7 +20,7 @@ use UriInterop\Interface\UriStruct;
  *
  * @phpstan-import-type request_server_array from RequestTypeAliases
  *
- * @phpstan-import-type uploads_array from UploadTypeAliases
+ * @phpstan-import-type upload_structs_array from UploadTypeAliases
  */
 interface RequestStruct
 {
@@ -44,7 +44,7 @@ interface RequestStruct
     /** @var request_server_array */
     public array $server { get; }
 
-    /** @var uploads_array */
+    /** @var upload_structs_array */
     public array $uploads { get; }
 
     public UriStruct $uri { get; }

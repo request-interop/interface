@@ -49,7 +49,7 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals (or 
     - Corresponds to an array of server and execution environment values.
     - Implementations SHOULD populate the property value from a copy of the `$_SERVER` superglobal array or its equivalent.
 
-- `uploads_array $uploads { get; }`
+- `upload_structs_array $uploads { get; }`
     - An array of [_UploadStruct_][] instances.
     - Implementations SHOULD derive the property value from the `$_FILES` superglobal array or its equivalent.
 
@@ -67,7 +67,7 @@ Notes:
 
 - **The `$input` property is a [Stream-Interop][] [_StringableStream_][].** Although most of the researched projects use a `string` proper for the raw body content, some use a resource. A [_StringableStream_][] allows for treating the content as a either a string or a resource stream.
 
-- **The `$uploads` property is an [Upload-Interop][] [`uploads_array`][].** This takes the place of a `$_FILES` superglobal equivalent.
+- **The `$uploads` property is an [Upload-Interop][] [`upload_structs_array`][].** This takes the place of a `$_FILES` superglobal equivalent.
 
 - **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].** Although most of the researched projects use a `string` proper for the request URI, some use an object. A [_UriStruct_][] allows for treating the URI as either an object or a string.
 
@@ -181,7 +181,7 @@ superglobals and related environment elements.
 [_Throwable_]: https://php.net/Throwable
 [_UploadStruct_]: https://github.com/uri-interop/interface#uristruct
 [_UriStruct_]: https://github.com/uri-interop/interface#uristruct
-[`uploads_array`]: https://github.com/upload-interop/interface#uploadtypealiases
+[`upload_structs_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://www.rfc-editor.org/info/bcp14
 [README-PSR-7.md]: ./README-PSR-7.md

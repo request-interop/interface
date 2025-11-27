@@ -43,148 +43,148 @@ input stream.
       result in a corresponding change to `$query`. This is to keep the
       request object free from global mutable state.
 
-- Properties:
+#### _RequestStruct_ Properties
 
-    - ```php
-      public request_body_array $body { get; }
-      ```
-        - Corresponds to an array of the request body values.
+- ```php
+  public request_body_array $body { get; }
+  ```
+    - Corresponds to an array of the request body values.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD populate the property value from a copy of
-              the `$_POST` superglobal array but MAY use some other data source,
-              such as a parsed or decoded representation of the request body.
+        - Implementations SHOULD populate the property value from a copy of
+          the `$_POST` superglobal array but MAY use some other data source,
+          such as a parsed or decoded representation of the request body.
 
-    - ```php
-      public request_cookies_array $cookies { get; }
-      ```
-        - Corresponds to an array of the request cookie values.
+- ```php
+  public request_cookies_array $cookies { get; }
+  ```
+    - Corresponds to an array of the request cookie values.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD populate the property value from a copy of
-              the `$_COOKIE` superglobal array but MAY use some other data source.
+        - Implementations SHOULD populate the property value from a copy of
+          the `$_COOKIE` superglobal array but MAY use some other data source.
 
-    - ```php
-      public request_headers_array $headers { get; }
-      ```
-        - Corresponds to an array of the request headers.
+- ```php
+  public request_headers_array $headers { get; }
+  ```
+    - Corresponds to an array of the request headers.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD derive the property value from the
-              `$server` array but MAY use some other data source.
+        - Implementations SHOULD derive the property value from the
+          `$server` array but MAY use some other data source.
 
-            - Implementations MUST normalize each header field array key to
-              `lower-kebab-case`.
+        - Implementations MUST normalize each header field array key to
+          `lower-kebab-case`.
 
-    - ```php
-      public StreamInterop\Interface\StringableStream $input { get; }
-      ```
-        - Corresponds to the raw body content.
+- ```php
+  public StreamInterop\Interface\StringableStream $input { get; }
+  ```
+    - Corresponds to the raw body content.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD use `php://input` as the encapsulated
-              resource but MAY use some other data source.
+        - Implementations SHOULD use `php://input` as the encapsulated
+          resource but MAY use some other data source.
 
-        - Notes:
+    - Notes:
 
-            - **This property is a [Stream-Interop][] [_StringableStream_][].**
-              Although most of the researched projects use a `string` proper for
-              the raw body content, some use a resource. A [_StringableStream_][]
-              allows for treating the content as a either a string or a resource
-              stream.
+        - **This property is a [Stream-Interop][] [_StringableStream_][].**
+          Although most of the researched projects use a `string` proper for
+          the raw body content, some use a resource. A [_StringableStream_][]
+          allows for treating the content as a either a string or a resource
+          stream.
 
-    - ```php
-      public request_method_string $method { get; }
-      ```
-        - Corresponds to the request method.
+- ```php
+  public request_method_string $method { get; }
+  ```
+    - Corresponds to the request method.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD derive the property value from the
-              `$server` array `'REQUEST_METHOD'` value but MAY use some
-              other data source.
+        - Implementations SHOULD derive the property value from the
+          `$server` array `'REQUEST_METHOD'` value but MAY use some
+          other data source.
 
-    - ```php
-      public request_query_array $query { get; }
-      ```
-        - Corresponds to an array of the request query values.
+- ```php
+  public request_query_array $query { get; }
+  ```
+    - Corresponds to an array of the request query values.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD populate the property value from a copy of
-              the `$_GET` superglobal array but MAY use some other data source.
+        - Implementations SHOULD populate the property value from a copy of
+          the `$_GET` superglobal array but MAY use some other data source.
 
-        - Notes:
+    - Notes:
 
-            - **There is no requirement to keep `$query` and `$uri->queryParams`
-              in sync.** Though they may originate from the same source, their
-              values might diverge from each other.
+        - **There is no requirement to keep `$query` and `$uri->queryParams`
+          in sync.** Though they may originate from the same source, their
+          values might diverge from each other.
 
-    - ```php
-      public request_server_array $server { get; }
-      ```
-        - Corresponds to an array of server and execution environment values.
+- ```php
+  public request_server_array $server { get; }
+  ```
+    - Corresponds to an array of server and execution environment values.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD populate the property value from a copy of
-              the `$_SERVER` superglobal array but MAY use some other data source.
+        - Implementations SHOULD populate the property value from a copy of
+          the `$_SERVER` superglobal array but MAY use some other data source.
 
-    - ```php
-      public upload_structs_array $uploads { get; }
-      ```
-        - An array of [_UploadStruct_][] instances corresponding to the uploaded
-        files in the request.
+- ```php
+  public upload_structs_array $uploads { get; }
+  ```
+    - An array of [_UploadStruct_][] instances corresponding to the uploaded
+    files in the request.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD derive the property value from the `$_FILES`
-              superglobal array but MAY use some other data source.
+        - Implementations SHOULD derive the property value from the `$_FILES`
+          superglobal array but MAY use some other data source.
 
-        - Notes:
+    - Notes:
 
-            - **This property is an [Upload-Interop][] [`upload_structs_array`][].**
-              Thus, `$uploads` takes the place of a `$_FILES` superglobal equivalent.
+        - **This property is an [Upload-Interop][] [`upload_structs_array`][].**
+          Thus, `$uploads` takes the place of a `$_FILES` superglobal equivalent.
 
-    - ```php
-      public UriInterop\Interface\UriStruct $uri { get; }
-      ```
-        - Corresponds to the requested URI.
+- ```php
+  public UriInterop\Interface\UriStruct $uri { get; }
+  ```
+    - Corresponds to the requested URI.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD derive the property value from the
-              `$server` array but MAY use some other data source.
+        - Implementations SHOULD derive the property value from the
+          `$server` array but MAY use some other data source.
 
-        - Notes:
+    - Notes:
 
-            - **This property is a [Uri-Interop][] [_UriStruct_][].** Although
-              most of the researched projects use a `string` for the request URI,
-              some use an object. A [_UriStruct_][] allows for treating the URI
-              as either an object or a string.
+        - **This property is a [Uri-Interop][] [_UriStruct_][].** Although
+          most of the researched projects use a `string` for the request URI,
+          some use an object. A [_UriStruct_][] allows for treating the URI
+          as either an object or a string.
 
 ### _RequestStructFactory_
 
 The [_RequestStructFactory_][] interface affords creating a new
 [_RequestStruct_][] instance for the current request.
 
-- Methods:
+#### _RequestStructFactory_ Methods
 
-    - ```php
-      public function newRequest() : RequestStruct;
-      ```
-        - Creates a new [_RequestStruct_][] instance representing the current
-        request.
+- ```php
+  public function newRequest() : RequestStruct;
+  ```
+    - Creates a new [_RequestStruct_][] instance representing the current
+    request.
 
-        - Directives:
+    - Directives:
 
-            - Implementations SHOULD create the new [_RequestStruct_][] from the
-              superglobals and `php://input` of the current request, but MAY use
-              some other data source.
+        - Implementations SHOULD create the new [_RequestStruct_][] from the
+          superglobals and `php://input` of the current request, but MAY use
+          some other data source.
 
 ### _RequestThrowable_
 

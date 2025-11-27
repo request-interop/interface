@@ -4,8 +4,7 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 /**
- * The _RequestTypeAliases_ interface provides these custom PHPStan types to aid
- * static analysis:
+ * The [_RequestTypeAliases_][] interface provides custom PHPStan types to aid static analysis.
  *
  * - ```
  *   request_cookies_array: array<string, string>

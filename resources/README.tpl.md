@@ -8,13 +8,10 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Request-Interop defines the following interfaces:
 
-- [_RequestStruct_][] to represent the current request.
-- [_RequestStructFactory_][] to create a new [_RequestStruct_][] instance
-  representing the current request.
-
-Request-Interop also defines a marker interface, [_RequestThrowable_][], for marking an [_Exception_][] as request-related.
-
-Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
+- [_RequestStruct_][] represents the current request values and input stream.
+- [_RequestStructFactory_][] affords creating a new [_RequestStruct_][] instance for the current request.
+- [_RequestThrowable_][] extends [_Throwable_][] to mark an [_Exception_][] as request-related.
+- [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
 
 {{= docs }}
 

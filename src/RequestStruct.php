@@ -9,8 +9,8 @@ use UriInterop\Interface\UriStruct;
 
 /**
  *
- * The [_RequestStruct_][] interface represents copies of the PHP superglobals
- * (or their equivalents) and values derived from them.
+ * The [_RequestStruct_][] interface represents the current request values and
+ * input stream.
  *
  * - Directives:
  *
@@ -78,7 +78,7 @@ interface RequestStruct
      * - Directives:
      *
      *     - Implementations SHOULD derive the property value from the
-     *       `$_SERVER` superglobal array but MAY use some other data source.
+     *       `$server` array but MAY use some other data source.
      *
      *     - Implementations MUST normalize each header field array key to
      *       `lower-kebab-case`.
@@ -111,7 +111,7 @@ interface RequestStruct
      * - Directives:
      *
      *     - Implementations SHOULD derive the property value from the
-     *       `$_SERVER['REQUEST_METHOD']` superglobal value but MAY use some
+     *       `$server` array `'REQUEST_METHOD'` value but MAY use some
      *       other data source.
      *
      * @var request_method_string
@@ -172,7 +172,7 @@ interface RequestStruct
      * - Directives:
      *
      *     - Implementations SHOULD derive the property value from the
-     *       `$_SERVER` superglobal array but MAY use some other data source.
+     *       `$server` array but MAY use some other data source.
      *
      * - Notes:
      *

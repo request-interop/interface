@@ -8,18 +8,15 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Request-Interop defines the following interfaces:
 
-- [_RequestStruct_][] to represent the current request.
-- [_RequestStructFactory_][] to create a new [_RequestStruct_][] instance
-  representing the current request.
-
-Request-Interop also defines a marker interface, [_RequestThrowable_][], for marking an [_Exception_][] as request-related.
-
-Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPStan types to aid static analysis.
+- [_RequestStruct_][] represents the current request values and input stream.
+- [_RequestStructFactory_][] affords creating a new [_RequestStruct_][] instance for the current request.
+- [_RequestThrowable_][] extends [_Throwable_][] to mark an [_Exception_][] as request-related.
+- [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
 
 ### _RequestStruct_
 
-The [_RequestStruct_][] interface represents copies of the PHP superglobals
-(or their equivalents) and values derived from them.
+The [_RequestStruct_][] interface represents the current request values and
+input stream.
 
 - Directives:
 
@@ -173,7 +170,7 @@ The [_RequestStruct_][] interface represents copies of the PHP superglobals
 ### _RequestStructFactory_
 
 The [_RequestStructFactory_][] interface affords creating a new
-[_RequestStruct_][] instance representing the current request.
+[_RequestStruct_][] instance for the current request.
 
 - Methods:
 
@@ -196,8 +193,7 @@ The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an
 
 ### _RequestTypeAliases_
 
-The _RequestTypeAliases_ interface provides these custom PHPStan types to aid
-static analysis:
+The [_RequestTypeAliases_][] interface provides custom PHPStan types to aid static analysis.
 
 - ```
   request_cookies_array: array<string, string>

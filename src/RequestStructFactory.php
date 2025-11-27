@@ -5,7 +5,7 @@ namespace RequestInterop\Interface;
 
 /**
  * The [_RequestStructFactory_][] interface affords creating a new
- * [_RequestStruct_][] instance representing the current request.
+ * [_RequestStruct_][] instance for the current request.
  */
 interface RequestStructFactory
 {

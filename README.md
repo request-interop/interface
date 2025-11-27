@@ -8,8 +8,9 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 Request-Interop defines the following interfaces:
 
-- [_RequestStruct_][] to represent the incoming request.
-- [_RequestStructFactory_][] to create [_RequestStruct_][] instances.
+- [_RequestStruct_][] to represent the current request.
+- [_RequestStructFactory_][] to create a new [_RequestStruct_][] instance
+  representing the current request.
 
 Request-Interop also defines a marker interface, [_RequestThrowable_][], for marking an [_Exception_][] as request-related.
 
@@ -17,99 +18,236 @@ Finally, Request-Interop defines a [_RequestTypeAliases_][] interface with PHPSt
 
 ### _RequestStruct_
 
-The [_RequestStruct_][] interface represents copies of the PHP superglobals (or their equivalents) and values derived from them. It defines these properties:
+The [_RequestStruct_][] interface represents copies of the PHP superglobals
+(or their equivalents) and values derived from them.
 
-- `request_body_array $body { get; }`
-    - Corresponds to an array of the request body values.
-    - Implementations SHOULD populate the property value from a copy of the `$_POST` superglobal array or its equivalent.
-    - Implementations MAY derive the property value from a parsed or decoded representation of the request body.
+- Directives:
 
-- `request_cookies_array $cookies { get; }`
-    - Corresponds to an array of the request cookie values.
-    - Implementations SHOULD populate the property value from a copy of the `$_COOKIE` superglobal array or its equivalent.
+    - Implementations MUST retain their properties in such way that they
+      remain independent of the superglobal arrays.
 
-- `request_headers_array $headers { get; }`
-    - Corresponds to an array of the request headers.
-    - Implementations SHOULD derive the property value from the `$_SERVER` superglobal array or its equivalent.
-    - Each array key MUST be the header field name in lower-kebab-case.
+- Notes:
 
-- `StringableStream $input { get; }`
-    - Corresponds to the raw request content.
-    - Implementations SHOULD use `php://input` as the encapsulated resource.
+    - **The interface defines readable properties, not getter methods.** PHP
+      superglobals are presented as variables and not as functions; using
+      properties instead of methods maintains symmetry with the language.
+      In addition, using things like array access and null-coalesce against a
+      property looks more idiomatic in PHP than with a getter method; it is
+      the difference between `$request->query['foo'] ?? 'bar'` and
+      `$request->getQuery()['foo'] ?? 'bar'` or
+      `$request->query->get('foo', 'bar')`.
 
-- `request_method_string $method { get; }`
-    - Corresponds to the request method.
-    - Implentations SHOULD derive the property value from the `$_SERVER['REQUEST_METHOD']` superglobal value or its equivalent.
+    - **The interface defines property hooks for `get` but not `set`.** The
+      interface only guarantees readability; writability is outside the scope
+      of this package.
 
-- `request_query_array $query { get; }`
-    - Corresponds to an array of the request query values.
-    - Implementations SHOULD populate the property value from a copy of the `$_GET` superglobal array or its equivalent.
+    - **The properties and the superglobals should be decoupled from each
+      other.** For example, this means that change to `$_GET` should not
+      result in a corresponding change to `$query`. This is to keep the
+      request object free from global mutable state.
 
-- `request_server_array $server { get; }`
-    - Corresponds to an array of server and execution environment values.
-    - Implementations SHOULD populate the property value from a copy of the `$_SERVER` superglobal array or its equivalent.
+- Properties:
 
-- `upload_structs_array $uploads { get; }`
-    - An array of [_UploadStruct_][] instances.
-    - Implementations SHOULD derive the property value from the `$_FILES` superglobal array or its equivalent.
+    - ```php
+      public request_body_array $body { get; }
+      ```
+        - Corresponds to an array of the request body values.
 
-- `UriStruct $uri { get; }`
-    - Corresponds to the requested URI.
-    - Implementations SHOULD derive the property value from the `$_SERVER` superglobal array or its equivalent.
+        - Directives:
 
-Notes:
+            - Implementations SHOULD populate the property value from a copy of
+              the `$_POST` superglobal array but MAY use some other data source,
+              such as a parsed or decoded representation of the request body.
 
-- **The interface defines readable properties, not getter methods.** PHP superglobals are presented as variables and not as functions; using properties instead of methods maintains symmetry with the language. In addition, using things like array access and null-coalesce against a property looks more idiomatic in PHP than with a getter method; it is the difference between `$request->query['foo'] ?? 'bar'` and `$request->getQuery()['foo'] ?? 'bar'` or `$request->query->get('foo', 'bar')`.
+    - ```php
+      public request_cookies_array $cookies { get; }
+      ```
+        - Corresponds to an array of the request cookie values.
 
-- **The interface defines property hooks for `get` but not `set`.** The interface only guarantees readability; writability is outside the scope of this package.
+        - Directives:
 
-- **There is no requirement to keep `$query` and `$uri->queryParams` in sync.** Though they may originate from the same source, their values might diverge from each other.
+            - Implementations SHOULD populate the property value from a copy of
+              the `$_COOKIE` superglobal array but MAY use some other data source.
 
-- **The `$input` property is a [Stream-Interop][] [_StringableStream_][].** Although most of the researched projects use a `string` proper for the raw body content, some use a resource. A [_StringableStream_][] allows for treating the content as a either a string or a resource stream.
+    - ```php
+      public request_headers_array $headers { get; }
+      ```
+        - Corresponds to an array of the request headers.
 
-- **The `$uploads` property is an [Upload-Interop][] [`upload_structs_array`][].** This takes the place of a `$_FILES` superglobal equivalent.
+        - Directives:
 
-- **The `$uri` property is a [Uri-Interop][] [_UriStruct_][].** Although most of the researched projects use a `string` proper for the request URI, some use an object. A [_UriStruct_][] allows for treating the URI as either an object or a string.
+            - Implementations SHOULD derive the property value from the
+              `$server` array but MAY use some other data source.
+
+            - Implementations MUST normalize each header field array key to
+              `lower-kebab-case`.
+
+    - ```php
+      public StreamInterop\Interface\StringableStream $input { get; }
+      ```
+        - Corresponds to the raw body content.
+
+        - Directives:
+
+            - Implementations SHOULD use `php://input` as the encapsulated
+              resource but MAY use some other data source.
+
+        - Notes:
+
+            - **This property is a [Stream-Interop][] [_StringableStream_][].**
+              Although most of the researched projects use a `string` proper for
+              the raw body content, some use a resource. A [_StringableStream_][]
+              allows for treating the content as a either a string or a resource
+              stream.
+
+    - ```php
+      public request_method_string $method { get; }
+      ```
+        - Corresponds to the request method.
+
+        - Directives:
+
+            - Implementations SHOULD derive the property value from the
+              `$server` array `'REQUEST_METHOD'` value but MAY use some
+              other data source.
+
+    - ```php
+      public request_query_array $query { get; }
+      ```
+        - Corresponds to an array of the request query values.
+
+        - Directives:
+
+            - Implementations SHOULD populate the property value from a copy of
+              the `$_GET` superglobal array but MAY use some other data source.
+
+        - Notes:
+
+            - **There is no requirement to keep `$query` and `$uri->queryParams`
+              in sync.** Though they may originate from the same source, their
+              values might diverge from each other.
+
+    - ```php
+      public request_server_array $server { get; }
+      ```
+        - Corresponds to an array of server and execution environment values.
+
+        - Directives:
+
+            - Implementations SHOULD populate the property value from a copy of
+              the `$_SERVER` superglobal array but MAY use some other data source.
+
+    - ```php
+      public upload_structs_array $uploads { get; }
+      ```
+        - An array of [_UploadStruct_][] instances corresponding to the uploaded
+        files in the request.
+
+        - Directives:
+
+            - Implementations SHOULD derive the property value from the `$_FILES`
+              superglobal array but MAY use some other data source.
+
+        - Notes:
+
+            - **This property is an [Upload-Interop][] [`upload_structs_array`][].**
+              Thus, `$uploads` takes the place of a `$_FILES` superglobal equivalent.
+
+    - ```php
+      public UriInterop\Interface\UriStruct $uri { get; }
+      ```
+        - Corresponds to the requested URI.
+
+        - Directives:
+
+            - Implementations SHOULD derive the property value from the
+              `$server` array but MAY use some other data source.
+
+        - Notes:
+
+            - **This property is a [Uri-Interop][] [_UriStruct_][].** Although
+              most of the researched projects use a `string` for the request URI,
+              some use an object. A [_UriStruct_][] allows for treating the URI
+              as either an object or a string.
 
 ### _RequestStructFactory_
 
-The [_RequestStructFactory_][] interface affords creating a [_RequestStruct_][] instance:
+The [_RequestStructFactory_][] interface affords creating a new
+[_RequestStruct_][] instance representing the current request.
 
-- ```php
-    public function newRequest() : RequestStruct;
-  ```
+- Methods:
 
-Implementations SHOULD create the new _RequestStruct_ from the superglobals of
-the current request, but MAY use some other data source.
+    - ```php
+      public function newRequest() : RequestStruct;
+      ```
+        - Creates a new [_RequestStruct_][] instance representing the current
+        request.
+
+        - Directives:
+
+            - Implementations SHOULD create the new [_RequestStruct_][] from the
+              superglobals and `php://input` of the current request, but MAY use
+              some other data source.
 
 ### _RequestThrowable_
 
-The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an [_Exception_][] as request-related. It adds no class members.
+The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an
+[_Exception_][] as request-related. It adds no class members.
 
 ### _RequestTypeAliases_
 
-The _RequestTypeAliases_ interface provides these custom PHPStan types to aid static analysis:
+The _RequestTypeAliases_ interface provides these custom PHPStan types to aid
+static analysis:
 
-- `request_cookies_array`: `array<string, string>`
+- ```
+  request_cookies_array: array<string, string>
+  ```
+   - An `array` representing `$_COOKIE` data.
 
-- `request_headers_array`: `array<lowercase-string, string>`
+- ```
+  request_headers_array: array<lowercase-string, string>
+  ```
+   - An `array` consisting of a header field name string in `lower-kebab-case`
+     and the corresponding header field value string.
 
-- `request_body_array`: `array<array-key, null|scalar|request_body_array>` recursively up to 16 dimensions.
+- ```
+  request_body_array: array<array-key, null|scalar|request_body_array>
+  ```
+    - An `array` representing `$_POST` data (or other data parsed or decoded
+      from the request body) up to 16 dimensions.
 
-- `request_method_string`: `uppercase-string`
+- ```
+  request_method_string: uppercase-string
+  ```
+    - A `string` representing the HTTP request method.
 
-- `request_query_array`: `array<array-key, string|request_query_array>` recursively up to 16 dimensions.
+- ```
+  request_query_array: array<array-key, string|request_query_array>
+  ```
+    - An `array` representing `$_GET` data up to 16 dimensions.
 
-- `request_server_array`: `array<string, string>`
+- ```
+  request_server_array: array<string, string>
+  ```
+    - **The `request_server_array` type is `array<string, string>` and not
+      `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys
+      in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
 
-Notes:
+- Notes:
 
-- **The `request_query_array` type allows only `string`, while `request_body_array` allows any `scalar`.** The `request_query_array` values correspond to `$_GET`, which is composed only of strings. However, `request_body_array` corresponds to any parsed or decoded form of the request content body; different parsing strategies, such as `json_decode()`, may return various scalar types.
+    - **The `request_query_array` type allows only `string`, while
+      `request_body_array` allows any `scalar`.** The `request_query_array`
+      values correspond to `$_GET`, which is composed only of strings.
+      However, `request_body_array` corresponds to any parsed or decoded
+      form of the request content body; different parsing strategies, such
+      as `json_decode()`, may return various scalar types.
 
-- **The `request_server_array` type is `array<string, string>` and not `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys in mixed case; for example, Microsoft IIS adds `IIS_WasUrlRewritten`.
-
-- **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does not handle recursive type aliases, so `request_body_array` and `request_query_array` cannot ever refer back to themselves. As a result, those type aliases refer to the `*_[00-0F]` types to enable recursion to 16 dimensions. Consumers need not use these recursion-enabling type aliases.
-
+    - **The `*_[00-0F]` types are to enable limited recursion.** PHPStan does
+      not handle recursive type aliases, so `request_body_array` and
+      `request_query_array` cannot ever refer back to themselves. As a
+      result, those type aliases refer to the `*_[00-0F]` types to enable
+      recursion to 16 dimensions. Consumers need not use these recursion-enabling
+      type aliases.
 
 ## Implementations
 

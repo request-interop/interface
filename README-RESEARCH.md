@@ -266,7 +266,7 @@ Most projects provide access to `php://input` via a property or method, though t
 | zf1       | `getRawBody()`      | `string`                | x   | x    |         |       |
 
 
-### Factories
+## Factories
 
 The projects offer varying levels of support for creating request objects from
 the PHP superglobals. Some projects provide factory methods or constructors that
@@ -295,6 +295,8 @@ keyword.
 | yii2      |               |                | x     |
 | zf1       |               |                | x     |
 
+### Factory Signatures
+
 Signatures are as follows:
 
 |           | Creation Signature                                                                   |
@@ -315,6 +317,8 @@ Signatures are as follows:
 | yaf       | `public function __construct(?string $uri = null, ?string $base_uri = null)` |
 | yii2      | -                                                                                    |
 | zf1       | `public function __construct(string\|Zend_Uri\|null $uri = null)`                    |
+
+Note that some of the projects do not have a constructor for the request object.
 
 ## Superglobal Coupling
 

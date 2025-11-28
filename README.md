@@ -48,13 +48,31 @@ input stream.
 - ```php
   public request_body_array $body { get; }
   ```
-    - Corresponds to an array of the request body values.
+    - Corresponds to a parsed array of the request body content.
 
     - Directives:
 
         - Implementations SHOULD populate the property value from a copy of
           the `$_POST` superglobal array but MAY use some other data source,
           such as a parsed or decoded representation of the request body.
+
+- ```php
+  public StreamInterop\Interface\StringableStream $bodyStream { get; }
+  ```
+    - Corresponds to a stream of the unparsed body content.
+
+    - Directives:
+
+        - Implementations SHOULD use `php://input` as the encapsulated
+          resource but MAY use some other data source.
+
+    - Notes:
+
+        - **This property is a [Stream-Interop][] [_StringableStream_][].**
+          Although most of the researched projects use a `string` proper for
+          the raw body content, some use a resource. A [_StringableStream_][]
+          allows for treating the content as a either a string or a resource
+          stream.
 
 - ```php
   public request_cookies_array $cookies { get; }
@@ -78,24 +96,6 @@ input stream.
 
         - Implementations MUST normalize each header field array key to
           `lower-kebab-case`.
-
-- ```php
-  public StreamInterop\Interface\StringableStream $input { get; }
-  ```
-    - Corresponds to the raw body content.
-
-    - Directives:
-
-        - Implementations SHOULD use `php://input` as the encapsulated
-          resource but MAY use some other data source.
-
-    - Notes:
-
-        - **This property is a [Stream-Interop][] [_StringableStream_][].**
-          Although most of the researched projects use a `string` proper for
-          the raw body content, some use a resource. A [_StringableStream_][]
-          allows for treating the content as a either a string or a resource
-          stream.
 
 - ```php
   public request_method_string $method { get; }

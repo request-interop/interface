@@ -317,11 +317,11 @@ superglobals and related environment elements.
 [_UriStruct_]: https://github.com/uri-interop/interface#uristruct
 [`upload_structs_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
-[BCP 14]: https://www.rfc-editor.org/info/bcp14
+[BCP 14]: https://datatracker.ietf.org/doc/bcp14/
 [README-PSR-7.md]: ./README-PSR-7.md
 [README-RESEARCH.md]: ./README-RESEARCH.md
-[RFC 2119]: https://www.rfc-editor.org/rfc/rfc2119.txt
-[RFC 8174]: https://www.rfc-editor.org/rfc/rfc8174.txt
+[RFC 2119]: https://datatracker.ietf.org/doc/html/rfc2119
+[RFC 8174]: https://datatracker.ietf.org/doc/html/rfc8174
 [Stream-Interop]: https://github.com/stream-interop/interface
 [The Real Difference Between a URL and a URI]: https://danielmiessler.com/blog/difference-between-uri-url/
 [Upload-Interop]: https://github.com/upload-interop/interface

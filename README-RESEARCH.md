@@ -320,6 +320,13 @@ Signatures are as follows:
 
 Note that some of the projects do not have a constructor for the request object.
 
+### Factory Failure
+
+In no case do any of the projects fail to create a request using its default
+arguments, typically the PHP superglobals. That is, the the request object is
+always created, even if the project needs to set its own values for missing or
+invalid values.
+
 ## Superglobal Coupling
 
 Coupling of request objects to the superglobal variables is varied across the

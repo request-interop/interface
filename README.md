@@ -317,13 +317,13 @@ Of the 16 researched projects, only 3 provide a separate factory class. The
 remainder provide either a static factory method on the request object itself,
 or use only `new` for creating a request object.
 
-However, the Response-Interop request interface is modeled as a struct, meaning
+However, the Request-Interop request interface is modeled as a struct, meaning
 it can have no methods, only properties.
 
 As such, even though the use of a factory class is decidedly the minority
-position, Response-Interop asserts that it is the more suitable choice here.
+position, Request-Interop asserts that it is the more suitable choice here.
 
-Further, Response-Interop opines that a separate factory interface better
+Further, Request-Interop opines that a separate factory interface better
 separates the concern of creating or building the _RequestStruct_ using the
 superglobals and related environment elements.
 

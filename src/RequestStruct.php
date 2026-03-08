@@ -9,7 +9,7 @@ use UriInterop\Interface\UriStruct;
 
 /**
  *
- * The [_RequestStruct_][] interface represents the current request values and
+ * [_RequestStruct_][] represents the current request values and
  * input stream.
  *
  * - Directives:

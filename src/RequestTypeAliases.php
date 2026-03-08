@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 /**
- * The [_RequestTypeAliases_][] interface provides custom PHPStan types to aid static analysis.
+ * [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
  *
  * - ```
  *   request_cookies_array: array<string, string>
@@ -24,7 +24,7 @@ namespace RequestInterop\Interface;
  *       from the request body) up to 16 dimensions.
  *
  * - ```
- *   request_method_string: uppercase-string
+ *   request_method_string: non-empty-string&uppercase-string
  *   ```
  *     - A `string` representing the HTTP request method.
  *
@@ -78,7 +78,7 @@ namespace RequestInterop\Interface;
  * @phpstan-type request_body_array_0E array<array-key, null|scalar|request_body_array_0F>
  * @phpstan-type request_body_array_0F array<array-key, null|scalar>
  *
- * @phpstan-type request_method_string non-empty-string|uppercase-string
+ * @phpstan-type request_method_string non-empty-string&uppercase-string
  *
  * @phpstan-type request_query_array    array<array-key, string|request_query_array_00>
  * @phpstan-type request_query_array_00 array<array-key, string|request_query_array_01>

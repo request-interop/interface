@@ -32,7 +32,7 @@ See also <https://docs.google.com/spreadsheets/d/e/2PACX-1vQzJP00bOAMYGSVQ8QIIJk
 
 ## Mutability
 
-The projects offer varying levels of nominal mutability. Note that "readonly" here means the project does not allow *public* mutability; formal `readonly` might not be in place, thus allowing mutablity within protected or private scopes, but not from outside the object.
+The projects offer varying levels of nominal mutability. Note that "readonly" here means the project does not allow *public* mutability; formal `readonly` might not be in place, thus allowing mutability within protected or private scopes, but not from outside the object.
 
 |           | Readonly | Mutable |
 | --------- | -------- | ------- |
@@ -53,7 +53,7 @@ The projects offer varying levels of nominal mutability. Note that "readonly" he
 | zf1       |          | x       |
 
 
-None of the researched projects advertise immutablity.
+None of the researched projects advertise immutability.
 
 ## Superglobals
 
@@ -123,7 +123,7 @@ The naming for this superglobal is less consistent than for the other supergloba
 | tempest   | `$cookies`          | `array`                   |
 | yaf       | `getCookie()`       | `array`                   |
 | yii2      | `getCookies()`      | _CookieCollection_ class  |
-| zf1       | `getCookie()`       | `array                    |
+| zf1       | `getCookie()`       | `array`                   |
 
 ### `$_SERVER`
 
@@ -274,7 +274,7 @@ accept superglobal arrays, while others require only instantiation via the `new`
 keyword.
 
 - "Factory Class" indicates a separate factory class for creating the request object.
-- "Factory Method" indicates a method on the creation method on request object itself.
+- "Factory Method" indicates a creation method on the request object itself.
 
 |           | Factory Class | Factory Method | `new` |
 | --------- | ------------- | -------------- | ----- |
@@ -323,7 +323,7 @@ Note that some of the projects do not have a constructor for the request object.
 ### Factory Failure
 
 In no case do any of the projects fail to create a request using its default
-arguments, typically the PHP superglobals. That is, the the request object is
+arguments, typically the PHP superglobals. That is, the request object is
 always created, even if the project needs to set its own values for missing or
 invalid values.
 

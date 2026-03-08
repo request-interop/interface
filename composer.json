@@ -22,7 +22,8 @@
     },
     "require-dev": {
         "pds/skeleton": "^1.0",
-        "phpstan/phpstan": "^2.0"
+        "phpstan/phpstan": "^2.0",
+        "star-interop/stardoc": "1.x-dev"
     },
     "scripts": {
         "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",

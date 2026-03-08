@@ -1,8 +1,14 @@
 # Request-Interop Standard Interface Package
 
-This package provides a standard set of interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects, refines, and reconciles the common practices identified within [several pre-existing projects][README-RESEARCH.md].
+Request-Interop provides an interoperable package of standard interfaces for
+encapsulating readable server-side request values in PHP 8.4 or later, in
+order to reduce the global mutable state problems that exist with PHP
+superglobals. It reflects, refines, and reconciles the common practices
+identified within [several pre-existing projects][README-RESEARCH.md].
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
@@ -15,7 +21,7 @@ Request-Interop defines the following interfaces:
 
 ### _RequestStruct_
 
-The [_RequestStruct_][] interface represents the current request values and
+[_RequestStruct_][] represents the current request values and
 input stream.
 
 - Directives:
@@ -169,7 +175,7 @@ input stream.
 
 ### _RequestStructFactory_
 
-The [_RequestStructFactory_][] interface affords creating a new
+[_RequestStructFactory_][] affords creating a new
 [_RequestStruct_][] instance for the current request.
 
 #### _RequestStructFactory_ Methods
@@ -192,7 +198,7 @@ The [_RequestStructFactory_][] interface affords creating a new
         - Implementations SHOULD provide defaults for missing or invalid
           values discovered during [_RequestStruct_][] creation.
 
-        - Inplementations MAY throw a [_RequestThrowable_][] on failure to
+        - Implementations MAY throw a [_RequestThrowable_][] on failure to
           create a new [_RequestStruct_][].
 
     - Notes:
@@ -201,7 +207,7 @@ The [_RequestStructFactory_][] interface affords creating a new
           implementations always return a new instance, even if they have to
           provide default values for missing or invalid request elements.
 
-          However, Response-Interop recognizes that there may be times where
+          However, Request-Interop recognizes that there may be times where
           catastrophic failure is appropriate, thus the allowance for
           throwing a [_RequestThrowable_][].
 
@@ -211,12 +217,12 @@ The [_RequestStructFactory_][] interface affords creating a new
 
 ### _RequestThrowable_
 
-The [_RequestThrowable_][] interface extends [_Throwable_][] to mark an
+[_RequestThrowable_][] extends [_Throwable_][] to mark an
 [_Exception_][] as request-related. It adds no class members.
 
 ### _RequestTypeAliases_
 
-The [_RequestTypeAliases_][] interface provides custom PHPStan types to aid static analysis.
+[_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
 
 - ```
   request_cookies_array: array<string, string>
@@ -236,7 +242,7 @@ The [_RequestTypeAliases_][] interface provides custom PHPStan types to aid stat
       from the request body) up to 16 dimensions.
 
 - ```
-  request_method_string: uppercase-string
+  request_method_string: non-empty-string&uppercase-string
   ```
     - A `string` representing the HTTP request method.
 
@@ -336,10 +342,9 @@ superglobals and related environment elements.
 [_RequestTypeAliases_]: #requesttypealiases
 [_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
 [_Throwable_]: https://php.net/Throwable
-[_UploadStruct_]: https://github.com/uri-interop/interface#uristruct
+[_UploadStruct_]: https://github.com/upload-interop/interface#uploadstruct
 [_UriStruct_]: https://github.com/uri-interop/interface#uristruct
 [`upload_structs_array`]: https://github.com/upload-interop/interface#uploadtypealiases
-[`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://datatracker.ietf.org/doc/bcp14/
 [README-PSR-7.md]: ./README-PSR-7.md
 [README-RESEARCH.md]: ./README-RESEARCH.md

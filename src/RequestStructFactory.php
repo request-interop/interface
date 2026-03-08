@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace RequestInterop\Interface;
 
 /**
- * The [_RequestStructFactory_][] interface affords creating a new
+ * [_RequestStructFactory_][] affords creating a new
  * [_RequestStruct_][] instance for the current request.
  */
 interface RequestStructFactory
@@ -25,7 +25,7 @@ interface RequestStructFactory
      *     - Implementations SHOULD provide defaults for missing or invalid
      *       values discovered during [_RequestStruct_][] creation.
      *
-     *     - Inplementations MAY throw a [_RequestThrowable_][] on failure to
+     *     - Implementations MAY throw a [_RequestThrowable_][] on failure to
      *       create a new [_RequestStruct_][].
      *
      * - Notes:
@@ -34,7 +34,7 @@ interface RequestStructFactory
      *       implementations always return a new instance, even if they have to
      *       provide default values for missing or invalid request elements.
      *
-     *       However, Response-Interop recognizes that there may be times where
+     *       However, Request-Interop recognizes that there may be times where
      *       catastrophic failure is appropriate, thus the allowance for
      *       throwing a [_RequestThrowable_][].
      *

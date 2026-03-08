@@ -1,8 +1,14 @@
 # Request-Interop Standard Interface Package
 
-This package provides a standard set of interoperable interfaces for encapsulating readable server-side request values in PHP 8.4 or later, in order to reduce the global mutable state problems that exist with PHP superglobals. It reflects, refines, and reconciles the common practices identified within [several pre-existing projects][README-RESEARCH.md].
+Request-Interop provides an interoperable package of standard interfaces for
+encapsulating readable server-side request values in PHP 8.4 or later, in
+order to reduce the global mutable state problems that exist with PHP
+superglobals. It reflects, refines, and reconciles the common practices
+identified within [several pre-existing projects][README-RESEARCH.md].
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this document are to be
+interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
@@ -64,13 +70,13 @@ Of the 16 researched projects, only 3 provide a separate factory class. The
 remainder provide either a static factory method on the request object itself,
 or use only `new` for creating a request object.
 
-However, the Response-Interop request interface is modeled as a struct, meaning
+However, the Request-Interop request interface is modeled as a struct, meaning
 it can have no methods, only properties.
 
 As such, even though the use of a factory class is decidedly the minority
-position, Response-Interop asserts that it is the more suitable choice here.
+position, Request-Interop asserts that it is the more suitable choice here.
 
-Further, Response-Interop opines that a separate factory interface better
+Further, Request-Interop opines that a separate factory interface better
 separates the concern of creating or building the _RequestStruct_ using the
 superglobals and related environment elements.
 
@@ -83,10 +89,9 @@ superglobals and related environment elements.
 [_RequestTypeAliases_]: #requesttypealiases
 [_StringableStream_]: https://github.com/stream-interop/interface#stringablestream
 [_Throwable_]: https://php.net/Throwable
-[_UploadStruct_]: https://github.com/uri-interop/interface#uristruct
+[_UploadStruct_]: https://github.com/upload-interop/interface#uploadstruct
 [_UriStruct_]: https://github.com/uri-interop/interface#uristruct
 [`upload_structs_array`]: https://github.com/upload-interop/interface#uploadtypealiases
-[`files_array`]: https://github.com/upload-interop/interface#uploadtypealiases
 [BCP 14]: https://datatracker.ietf.org/doc/bcp14/
 [README-PSR-7.md]: ./README-PSR-7.md
 [README-RESEARCH.md]: ./README-RESEARCH.md

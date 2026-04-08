@@ -23,10 +23,13 @@
     "require-dev": {
         "pds/skeleton": "^1.0",
         "phpstan/phpstan": "^2.0",
-        "star-interop/stardoc": "1.x-dev"
+        "star-interop/stardoc": "1.x-dev",
+        "pmjones/php-styler": "0.x@dev"
     },
     "scripts": {
         "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
-        "check": "composer analyze"
+        "check": "composer analyze && composer cs-check",
+        "cs-check": "./vendor/bin/php-styler check --workers=auto",
+        "cs-fix": "./vendor/bin/php-styler apply --workers=auto"
     }
 }

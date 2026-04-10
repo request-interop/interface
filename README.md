@@ -225,12 +225,12 @@ input stream.
 [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
 
 - ```
-  request_cookies_array: array<string, string>
+  request_cookies_array: array<array-key, string|request_cookies_array>
   ```
-   - An `array` representing `$_COOKIE` data.
+   - An `array` representing `$_COOKIE` data up to 16 dimensions.
 
 - ```
-  request_headers_array: array<lowercase-string, string>
+  request_headers_array: array<int|lowercase-string, string>
   ```
    - An `array` consisting of a header field name string in `lower-kebab-case`
      and the corresponding header field value string.
@@ -252,7 +252,7 @@ input stream.
     - An `array` representing `$_GET` data up to 16 dimensions.
 
 - ```
-  request_server_array: array<string, string>
+  request_server_array: array<array-key, string>
   ```
     - **The `request_server_array` type is `array<string, string>` and not
       `array<uppercase-string, string>`.** Some servers add `$_SERVER` keys

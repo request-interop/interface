@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.1.0
+
+Widen custom types on `request_(cookies|header|server)_array` to use
+`array-key`.
+
 ## 1.0.0
 
 First stable release.

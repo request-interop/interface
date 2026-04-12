@@ -260,6 +260,12 @@ input stream.
 
 - Notes:
 
+    - **The `array-key` type allows for `int` keys.** Typically these keys
+      are strings, but because of PHP's type-conversion rules for array keys,
+      a string `'123'` array key will become an integer `123`. Such keys are
+      unusual in some situations (e.g. as header or cookie names) but are
+      valid nonetheless.
+
     - **The `request_query_array` type allows only `string`, while
       `request_body_array` allows any `scalar`.** The `request_query_array`
       values correspond to `$_GET`, which is composed only of strings.

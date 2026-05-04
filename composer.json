@@ -27,9 +27,10 @@
         "pmjones/php-styler": "0.x@dev"
     },
     "scripts": {
-        "analyze": "./vendor/bin/phpstan analyze -c phpstan.neon",
-        "check": "composer analyze && composer cs-check",
-        "cs-check": "./vendor/bin/php-styler check --workers=auto",
-        "cs-fix": "./vendor/bin/php-styler apply --workers=auto"
+        "analyze": "./vendor/bin/phpstan",
+        "check": "composer analyze && composer cs-clear && composer cs-check",
+        "cs-check": "./vendor/bin/php-styler check",
+        "cs-clear": "./vendor/bin/php-styler clear-cache",
+        "cs-fix": "./vendor/bin/php-styler apply"
     }
 }

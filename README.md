@@ -12,11 +12,14 @@ interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
-Request-Interop defines the following interfaces:
+This package defines the following interfaces:
 
 - [_RequestStruct_][] represents the current request values and input stream.
+
 - [_RequestStructFactory_][] affords creating a new [_RequestStruct_][] instance for the current request.
+
 - [_RequestThrowable_][] extends [_Throwable_][] to mark an [_Exception_][] as request-related.
+
 - [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
 
 ### _RequestStruct_
@@ -65,7 +68,7 @@ input stream.
 - ```php
   public StreamInterop\Interface\StringableStream $bodyStream { get; }
   ```
-    - Corresponds to a stream of the unparsed body content.
+    - A [_StringableStream_][] corresponding to the unparsed body content.
 
     - Directives:
 
@@ -77,7 +80,7 @@ input stream.
         - **This property is a [Stream-Interop][] [_StringableStream_][].**
           Although most of the researched projects use a `string` proper for
           the raw body content, some use a resource. A [_StringableStream_][]
-          allows for treating the content as a either a string or a resource
+          allows for treating the content as either a string or a resource
           stream.
 
 - ```php
@@ -159,7 +162,7 @@ input stream.
 - ```php
   public UriInterop\Interface\UriStruct $uri { get; }
   ```
-    - Corresponds to the requested URI.
+    - A [_UriStruct_][] corresponding to the requested URI.
 
     - Directives:
 
@@ -217,8 +220,10 @@ input stream.
 
 ### _RequestThrowable_
 
-[_RequestThrowable_][] extends [_Throwable_][] to mark an
-[_Exception_][] as request-related. It adds no class members.
+[_RequestThrowable_][] extends [_Throwable_][] to mark an [_Exception_][] as
+request-related.
+
+It adds no class members.
 
 ### _RequestTypeAliases_
 
@@ -284,13 +289,13 @@ input stream.
 
 Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of [_StringableStream_][] implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
 
-Implementations MAY define additional class members not specified in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
+Implementations MAY define additional class members not defined in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
 
 Notes:
 
 - **Reflection does not invalidate advertisements of readonly or immutable implementations.** The ability of a consumer to use Reflection to mutate an implementation advertised as readonly or immutable does not constitute a failure to comply with Request-Interop.
 
-- **Reference implementations** may be found at <https://github.com/request-interop/impl>.
+- **Reference implementations** are available at <https://github.com/request-interop/impl>.
 
 ## Q & A
 

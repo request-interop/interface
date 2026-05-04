@@ -61,7 +61,7 @@ interface RequestStruct
     public array $body { get; }
 
     /**
-     * Corresponds to a stream of the unparsed body content.
+     * A [_StringableStream_][] corresponding to the unparsed body content.
      *
      * - Directives:
      *
@@ -73,7 +73,7 @@ interface RequestStruct
      *     - **This property is a [Stream-Interop][] [_StringableStream_][].**
      *       Although most of the researched projects use a `string` proper for
      *       the raw body content, some use a resource. A [_StringableStream_][]
-     *       allows for treating the content as a either a string or a resource
+     *       allows for treating the content as either a string or a resource
      *       stream.
      */
     public StringableStream $bodyStream { get; }
@@ -167,7 +167,7 @@ interface RequestStruct
     public array $uploads { get; }
 
     /**
-     * Corresponds to the requested URI.
+     * A [_UriStruct_][] corresponding to the requested URI.
      *
      * - Directives:
      *

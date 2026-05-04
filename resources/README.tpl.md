@@ -12,12 +12,9 @@ interpreted as described in [BCP 14][] ([RFC 2119][], [RFC 8174][]).
 
 ## Interfaces
 
-Request-Interop defines the following interfaces:
+This package defines the following interfaces:
 
-- [_RequestStruct_][] represents the current request values and input stream.
-- [_RequestStructFactory_][] affords creating a new [_RequestStruct_][] instance for the current request.
-- [_RequestThrowable_][] extends [_Throwable_][] to mark an [_Exception_][] as request-related.
-- [_RequestTypeAliases_][] provides custom PHPStan types to aid static analysis.
+{{= list }}
 
 {{= docs }}
 
@@ -25,13 +22,13 @@ Request-Interop defines the following interfaces:
 
 Implementations advertised as readonly or immutable MUST be deeply readonly or immutable. With the exception of [_StringableStream_][] implementations meeting the specified readonly or immutable conditions, they MUST NOT encapsulate any references, resources, mutable objects, objects or arrays encapsulating references or resources or mutable objects, and so on.
 
-Implementations MAY define additional class members not specified in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
+Implementations MAY define additional class members not defined in these interfaces; implementations advertised as readonly or immutable MUST make those additional class members deeply readonly or immutable.
 
 Notes:
 
 - **Reflection does not invalidate advertisements of readonly or immutable implementations.** The ability of a consumer to use Reflection to mutate an implementation advertised as readonly or immutable does not constitute a failure to comply with Request-Interop.
 
-- **Reference implementations** may be found at <https://github.com/request-interop/impl>.
+- **Reference implementations** are available at <https://github.com/request-interop/impl>.
 
 ## Q & A
 

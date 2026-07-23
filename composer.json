@@ -16,9 +16,9 @@
     },
     "require": {
         "php": ">=8.4",
-        "stream-interop/interface": "1.x@dev",
-        "upload-interop/interface": "1.x@dev",
-        "uri-interop/interface": "1.x@dev"
+        "stream-interop/interface": "ˆ1.0",
+        "upload-interop/interface": "ˆ1.0",
+        "uri-interop/interface": "ˆ1.0"
     },
     "require-dev": {
         "pds/skeleton": "^1.0",

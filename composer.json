@@ -1,26 +1,31 @@
 {
     "name": "request-interop/interface",
-    "description": "Interoperable server request interfaces for PHP.",
     "type": "library",
+    "description": "Interoperable server request interfaces for PHP.",
+    "keywords": ["request", "server-request", "http", "superglobals"],
     "license": "MIT",
+    "homepage": "https://github.com/request-interop/interface",
     "authors": [
         {
             "name": "Paul M. Jones",
-            "email": "pmjones@pmjones.io"
+            "email": "pmjones@pmjones.io",
+            "homepage": "https://pmjones.io",
+            "role": "Lead"
         }
     ],
     "autoload": {
         "psr-4": {
-            "RequestInterop\\Interface\\": "./src"
+            "RequestInterop\\Interface\\": "src/"
         }
     },
     "require": {
         "php": ">=8.4",
-        "stream-interop/interface": "ˆ1.0",
-        "upload-interop/interface": "ˆ1.0",
-        "uri-interop/interface": "ˆ1.0"
+        "stream-interop/interface": "^1.0",
+        "upload-interop/interface": "^1.0",
+        "uri-interop/interface": "^1.0"
     },
     "require-dev": {
+        "pds/composer-script-names": "^1.0",
         "pds/skeleton": "^1.0",
         "phpstan/phpstan": "^2.0",
         "star-interop/stardoc": "1.x-dev",

@@ -5,9 +5,8 @@
 Hygiene release:
 
 - tighten docblock prose per per sibling packages
-- refresh meta-files
-- update package versions in composer.json
 - match version constraints per sibling packages
+- refresh meta-files
 
 ## 1.1.0
 

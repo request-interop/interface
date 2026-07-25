@@ -1,5 +1,14 @@
 # Change Log
 
+## 1.1.1
+
+Hygiene release:
+
+- tighten docblock prose per per sibling packages
+- refresh meta-files
+- update package versions in composer.json
+- match version constraints per sibling packages
+
 ## 1.1.0
 
 Widen custom types on `request_(cookies|header|server)_array` to use

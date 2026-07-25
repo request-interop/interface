@@ -2,3 +2,4 @@
 /composer.lock
 /tmp
 /vendor
+.php-styler.cache
